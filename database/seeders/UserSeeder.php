@@ -16,16 +16,34 @@ class UserSeeder extends Seeder
     {
         User::create([
             'name' => 'Admin Lapangan',
-            'email' => 'admin@lapangan.com',
-            'password' => Hash::make('admin123'),
+            'email' => 'raidatulzukira@gmail.com',
+            'password' => Hash::make('zukira123'),
             'role' => 'admin'
         ]);
 
         User::create([
             'name' => 'Zahra Customer',
-            'email' => 'zahra@mail.com',
-            'password' => Hash::make('zahra123'),
+            'email' => 'customer@gmail.com',
+            'password' => Hash::make('customer123'),
             'role' => 'customer'
         ]);
     }
 }
+
+
+// use Illuminate\Support\Facades\Hash;
+// use App\Models\User;
+
+// User::create([
+//     'name' => 'Admin Lapangan',
+//     'email' => 'admin@lapangan.com',
+//     'password' => Hash::make('admin123'),
+//     'role' => 'admin'
+// ]);
+
+// User::create([
+//     'name' => 'Zahra Customer',
+//     'email' => 'zahra@mail.com',
+//     'password' => Hash::make('zahra123'),
+//     'role' => 'customer'
+// ]);
