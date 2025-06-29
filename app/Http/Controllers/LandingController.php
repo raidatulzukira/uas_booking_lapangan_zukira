@@ -10,13 +10,29 @@ class LandingController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    // public function index()
+    // {
+    //     $lapangans = ZukiraLapangan::latest()->take(6)->get();
+    //     $reviews = ZukiraReview::with('user', 'lapangan')->latest()->take(3)->get();
+
+    //     return view('landing.index', compact('lapangans', 'reviews'));
+    // }
+
+    public function index(Request $request)
     {
-        $lapangans = ZukiraLapangan::latest()->take(6)->get();
-        $reviews = ZukiraReview::with('user', 'lapangan')->latest()->take(3)->get();
+        $query = ZukiraLapangan::query();
+
+        if ($request->has('search')) {
+            $query->where('nama', 'like', '%' . $request->search . '%')
+                  ->orWhere('tipe', 'like', '%' . $request->search . '%');
+        }
+
+        $lapangans = $query->latest()->get();
+        $reviews = ZukiraReview::with(['user', 'lapangan'])->latest()->take(5)->get();
 
         return view('landing.index', compact('lapangans', 'reviews'));
     }
+
 
     /**
      * Show the form for creating a new resource.

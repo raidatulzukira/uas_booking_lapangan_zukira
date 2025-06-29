@@ -16,8 +16,16 @@ class BookingController extends Controller
     public function adminIndex()
     {
         $bookings = ZukiraBooking::with(['user', 'lapangan'])->latest()->get();
-        return view('booking.index', compact('bookings'));
+        return view('booking.index_admin', compact('bookings'));
     }
+
+    public function konfirmasi($id)
+    {
+        $booking = ZukiraBooking::findOrFail($id);
+        $booking->update(['status' => 'dikonfirmasi']);
+        return back()->with('success', 'Booking dikonfirmasi.');
+    }
+
 
     /**
      * Show the form for creating a new resource.
@@ -29,6 +37,7 @@ class BookingController extends Controller
         $lapangan = ZukiraLapangan::findOrFail($lapangan_id);
         return view('booking.create', compact('lapangan'));
     }
+
 
 
     /**
@@ -45,7 +54,7 @@ class BookingController extends Controller
         ]);
 
         ZukiraBooking::create([
-            'user_id' => auth()->id(),
+            'user_id' => Auth::id(),
             'lapangan_id' => $request->lapangan_id,
             'tanggal' => $request->tanggal,
             'jam_mulai' => $request->jam_mulai,
@@ -55,7 +64,6 @@ class BookingController extends Controller
 
         return redirect('/')->with('success', 'Booking berhasil dibuat. Menunggu konfirmasi admin.');
     }
-
 
     /**
      * Display the specified resource.
@@ -89,12 +97,12 @@ class BookingController extends Controller
         //
     }
 
-    // Admin konfirmasi booking
-    public function konfirmasi($id)
-    {
-        $booking = ZukiraBooking::findOrFail($id);
-        $booking->update(['status' => 'dikonfirmasi']);
-        return back()->with('success', 'Booking telah dikonfirmasi.');
-    }
+    // // Admin konfirmasi booking
+    // public function konfirmasi($id)
+    // {
+    //     $booking = ZukiraBooking::findOrFail($id);
+    //     $booking->update(['status' => 'dikonfirmasi']);
+    //     return back()->with('success', 'Booking telah dikonfirmasi.');
+    // }
 
 }

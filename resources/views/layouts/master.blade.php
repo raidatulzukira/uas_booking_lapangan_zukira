@@ -1,35 +1,67 @@
 <!DOCTYPE html>
-<html lang="id">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Sistem Booking Lapangan</title>
-    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <title>Booking Lapangan</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #fff0f5;
+            font-family: 'Segoe UI', sans-serif;
+        }
+    </style>
 </head>
 <body>
-    {{-- Header --}}
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
-        <div class="container">
-            <a class="navbar-brand" href="/">BookingLapangan</a>
-            <div>
-                @auth
-                    <span class="text-white me-3">Halo, {{ Auth::user()->name }}</span>
-                    <a href="{{ route('logout') }}" onclick="event.preventDefault();document.getElementById('logout-form').submit();" class="btn btn-sm btn-outline-light">Logout</a>
-                    <form id="logout-form" action="{{ route('logout') }}" method="POST">@csrf</form>
-                @else
-                    <a href="{{ route('login') }}" class="btn btn-sm btn-outline-light">Login</a>
-                @endauth
-            </div>
-        </div>
-    </nav>
+    @include('layouts.partials.header')
 
-    {{-- Konten --}}
-    @yield('content')
+    <main class="py-4">
+        @yield('content')
+    </main>
 
-    {{-- Footer --}}
-    <footer class="bg-light py-3 mt-5">
-        <div class="text-center">© 2025 Zukira Booking Lapangan</div>
-    </footer>
-
-    <script src="{{ asset('js/app.js') }}"></script>
+    @include('layouts.partials.footer')
 </body>
 </html>
+
+
+{{-- <!DOCTYPE html>
+<html>
+<head>
+    <title>Booking Lapangan</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+<!-- Header -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container">
+    <a class="navbar-brand" href="{{ route('landing') }}">BookingLapangan</a>
+    <div class="collapse navbar-collapse">
+      <ul class="navbar-nav ms-auto">
+        @auth
+          <li class="nav-item"><a class="nav-link" href="/home">Dashboard</a></li>
+          <li class="nav-item">
+              <form method="POST" action="{{ route('logout') }}">
+                  @csrf
+                  <button class="nav-link btn btn-link" style="color: white;">Logout</button>
+              </form>
+          </li>
+        @else
+          <li class="nav-item"><a class="nav-link" href="{{ route('login') }}">Login</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ route('register') }}">Register</a></li>
+        @endauth
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- Konten -->
+<main class="py-4">
+    @yield('content')
+</main>
+
+<!-- Footer -->
+<footer class="bg-dark text-white text-center p-3">
+    &copy; {{ date('Y') }} Sistem Booking Lapangan Zukira
+</footer>
+
+</body>
+</html> --}}

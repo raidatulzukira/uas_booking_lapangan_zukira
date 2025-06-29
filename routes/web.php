@@ -1,73 +1,26 @@
 <?php
 
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\LapanganController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\LandingController;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Route;
 
-// Route::get('/', function () {
-//     return view('welcome');
-// });
+Route::get('/home', function () {
+    return redirect('/');
+});
 
-// Auth::routes();
+Route::get('/dashboard', [App\Http\Controllers\HomeController::class, 'index'])->middleware(['auth', 'checkrole:customer'])->name('dashboard');
 
-// Auth::routes(['register' => false]);
-
-// Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-
-// Auth::routes();
-
-// Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('/', [LandingController::class, 'index'])->name('landing');
 
 
-
-// use Illuminate\Support\Facades\Route;
-// use Illuminate\Support\Facades\Auth;
-
-// // Halaman depan untuk publik
-// Route::get('/', function () {
-//     return view('welcome'); // Nanti bisa ganti ke halaman landing booking
-// });
-
-// // Nonaktifkan register
-// Auth::routes(['register' => false]);
-
-// // Home setelah login (sementara)
-// Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-
-// // Contoh routing untuk admin
-// Route::middleware(['auth', 'checkrole:admin'])->group(function () {
-//     Route::get('/admin/dashboard', [App\Http\Controllers\AdminController::class, 'index'])->name('admin.dashboard');
-// });
-
-// // Contoh routing untuk customer
-// Route::middleware(['auth', 'checkrole:customer'])->group(function () {
-//     Route::get('/booking', [App\Http\Controllers\BookingController::class, 'index'])->name('booking.index');
-// });
-
-
-
-
-// Guest / Frontend
-Route::get('/', [LapanganController::class, 'index']);
 Route::get('/lapangan/{id}', [LapanganController::class, 'show']);
 
-// Auth
-Auth::routes(['register' => false]);
+Auth::routes();
 
-// Customer
-// Route::middleware(['auth', 'checkrole:customer'])->group(function () {
-//     Route::get('/booking', [BookingController::class, 'index']);
-//     Route::post('/booking', [BookingController::class, 'store']);
-//     Route::get('/payments', [PaymentController::class, 'index']);
-//     Route::post('/payments', [PaymentController::class, 'upload']);
-//     Route::post('/review', [ReviewController::class, 'store']);
-// });
-
-// Customer
 Route::middleware(['auth', 'checkrole:customer'])->group(function () {
     Route::resource('booking', BookingController::class)->except(['index']);
     Route::resource('review', ReviewController::class)->except(['index']);
@@ -75,35 +28,60 @@ Route::middleware(['auth', 'checkrole:customer'])->group(function () {
     Route::post('payments/upload', [PaymentController::class, 'upload']);
 });
 
-// Admin
+
 Route::middleware(['auth', 'checkrole:admin'])->group(function () {
-    Route::resource('/admin/lapangan', LapanganController::class);
-    Route::get('/admin/bookings', [BookingController::class, 'adminIndex']);
-    Route::post('/admin/bookings/konfirmasi/{id}', [BookingController::class, 'konfirmasi']);
-    Route::post('/admin/payments/verifikasi/{id}', [PaymentController::class, 'verifikasi']);
-    // Route::get('/admin/bookings', [BookingController::class, 'adminIndex']);
-    // Route::post('/admin/bookings/konfirmasi/{id}', [BookingController::class, 'konfirmasi']);
-    // Route::get('/admin/payments', [PaymentController::class, 'adminIndex']);
-    // Route::post('/admin/payments/verifikasi/{id}', [PaymentController::class, 'verifikasi']);
-});
-
-// Untuk publik (landing page)
-Route::get('/', [LapanganController::class, 'landing']);
-
-// Untuk admin (halaman kelola data lapangan)
-Route::middleware(['auth', 'checkrole:admin'])->group(function () {
-    Route::resource('/admin/lapangan', LapanganController::class);
+    Route::get('/admin/bookings', [BookingController::class, 'adminIndex'])->name('booking.admin');
+    Route::patch('/admin/bookings/{id}/konfirmasi', [BookingController::class, 'konfirmasi'])->name('booking.konfirmasi');
 });
 
 
-Route::get('/lapangan/{id}', [LapanganController::class, 'show']);
 
-Route::middleware(['auth', 'checkrole:customer'])->group(function () {
-    Route::get('/booking/create', [BookingController::class, 'create']);
-    Route::post('/booking', [BookingController::class, 'store']);
-    Route::get('/payments/create/{booking_id}', [PaymentController::class, 'create']);
-    Route::post('/payments', [PaymentController::class, 'store']);
-    Route::get('/review/create/{lapangan_id}', [ReviewController::class, 'create']);
-    Route::post('/review', [ReviewController::class, 'store']);
-});
 
+
+// ========================
+// ✨ FRONTEND UMUM (Publik)
+// ========================
+// Route::get('/', [LapanganController::class, 'landing']); // landing page
+// Route::get('/lapangan/{id}', [LapanganController::class, 'show']); // detail lapangan
+
+// ====================
+// 🔐 LOGIN (tanpa regis)
+// ====================
+// Auth::routes(['register' => false]);
+
+// ============================
+// 👤 CUSTOMER (dengan middleware)
+// ============================
+// Route::middleware(['auth', 'checkrole:customer'])->group(function () {
+//     // Booking
+//     Route::get('/booking/create', [BookingController::class, 'create'])->name('booking.create');
+//     Route::post('/booking', [BookingController::class, 'store'])->name('booking.store');
+
+//     // Payment
+//     Route::get('/payments/create/{booking_id}', [PaymentController::class, 'create'])->name('payments.create');
+//     Route::post('/payments', [PaymentController::class, 'store'])->name('payments.store');
+
+//     // Review
+//     Route::get('/review/create/{lapangan_id}', [ReviewController::class, 'create'])->name('review.create');
+//     Route::post('/review', [ReviewController::class, 'store'])->name('review.store');
+// });
+
+// =========================
+// 🛠️ ADMIN (dengan middleware)
+// =========================
+// Route::middleware(['auth', 'checkrole:admin'])->group(function () {
+//     // Kelola Lapangan
+//     Route::resource('/admin/lapangan', LapanganController::class);
+
+//     // Manajemen Booking
+//     Route::get('/admin/bookings', [BookingController::class, 'adminIndex'])->name('admin.bookings');
+//     Route::post('/admin/bookings/konfirmasi/{id}', [BookingController::class, 'konfirmasi'])->name('admin.bookings.konfirmasi');
+
+//     // Verifikasi Pembayaran
+//     Route::post('/admin/payments/verifikasi/{id}', [PaymentController::class, 'verifikasi'])->name('admin.payments.verifikasi');
+// });
+
+
+// Auth::routes();
+
+// Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

@@ -4,6 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
+use App\Models\ZukiraLapangan;
+use App\Models\ZukiraBooking;
+use App\Models\ZukiraReview;
+use Illuminate\Support\Facades\Auth;
+
 class HomeController extends Controller
 {
     /**
@@ -23,6 +28,10 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('home');
-    }
+        $lapangans = ZukiraLapangan::all();
+        $bookings = ZukiraBooking::with('lapangan')->where('user_id', Auth::id())->get();
+        $reviews = ZukiraReview::with('lapangan')->where('user_id', Auth::id())->get();
+
+        return view('dashboard.index', compact('lapangans', 'bookings', 'reviews'));
+}
 }

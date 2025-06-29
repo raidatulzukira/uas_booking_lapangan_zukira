@@ -18,7 +18,6 @@ return new class extends Migration
             $table->text('lokasi');
             $table->integer('harga');
             $table->string('foto')->nullable(); // nama file foto (disimpan di folder public/lapangans)
-            // $table->enum('status', ['aktif', 'tidak'])->default('aktif');
             $table->timestamps();
 
         });
