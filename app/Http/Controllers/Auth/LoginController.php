@@ -42,7 +42,9 @@ class LoginController extends Controller
 
     protected function authenticated($request, $user)
     {
-        // return redirect('/')->with('success', 'Anda berhasil Login, ' . $user->name . '!');
+        if ($user->role === 'admin') {
+            return redirect('/admin')->with('success', 'Anda berhasil Login, ' . $user->name . '!');
+        }
         return redirect('/dashboard')->with('success', 'Anda berhasil Login, ' . $user->name . '!');
     }
 

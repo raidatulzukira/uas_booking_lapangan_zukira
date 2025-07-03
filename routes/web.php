@@ -44,7 +44,7 @@ Route::get('/lapangan/{id}', [LapanganController::class, 'show']);
 Auth::routes();
 
 Route::middleware(['auth', 'checkrole:customer'])->group(function () {
-    Route::resource('booking', BookingController::class)->except(['index']);
+    Route::resource('booking', BookingController::class); // index, create, store, edit, update, destroy
     Route::resource('review', ReviewController::class)->except(['index']);
     Route::get('payments', [PaymentController::class, 'index']);
     Route::post('payments/upload', [PaymentController::class, 'upload']);

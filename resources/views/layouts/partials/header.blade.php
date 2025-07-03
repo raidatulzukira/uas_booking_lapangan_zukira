@@ -91,9 +91,16 @@
                     <button type="submit" class="nav-link btn btn-link text-white" onclick="return confirm('Anda yakin ingin logout?')">Logout</button>
                 </form>
             </li>
-            <li class="nav-item">
-                <div class="profile-wrapper">
+            <li class="nav-item position-relative">
+                <div class="profile-wrapper" id="profileDropdownBtn" style="cursor:pointer;">
                     <img src="{{ asset('images/user.png') }}" alt="Profile" class="profile-img">
+                </div>
+                <div id="profileDropdownMenu" class="dropdown-menu dropdown-menu-end shadow" style="min-width:160px; right:0; left:auto; top:40px; display:none; position:absolute; background:#fff0f5; border:1px solid #ffb6d5; border-radius:12px;">
+                    @if(Auth::user() && Auth::user()->role === 'admin')
+                    <a class="dropdown-item text-pink fw-bold" href="/admin" style="color:#ea3766;">
+                        <i class="fa fa-cogs me-2"></i> Admin Panel
+                    </a>
+                    @endif
                 </div>
             </li>
         @else
