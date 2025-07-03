@@ -61,7 +61,7 @@ class BookingController extends Controller
         'status' => 'pending',
     ]);
 
-    return redirect()->route('dashboard')->with('success', 'Booking berhasil, menunggu konfirmasi.');
+    return redirect()->route('booking.index')->with('success', 'Booking berhasil, menunggu konfirmasi.');
 }
 
     /**
@@ -104,4 +104,13 @@ class BookingController extends Controller
     //     return back()->with('success', 'Booking telah dikonfirmasi.');
     // }
 
+    // Customer melihat riwayat booking miliknya
+    public function index()
+    {
+        $bookings = ZukiraBooking::with('lapangan')
+            ->where('user_id', Auth::id())
+            ->latest()
+            ->get();
+        return view('booking.index', compact('bookings'));
+    }
 }
