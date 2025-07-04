@@ -52,7 +52,7 @@ class BookingController extends Controller
         'jam_selesai' => 'required|after:jam_mulai',
     ]);
 
-    ZukiraBooking::create([
+    $newBooking = ZukiraBooking::create([
         'user_id' => Auth::id(),
         'lapangan_id' => $request->lapangan_id,
         'tanggal' => $request->tanggal,
@@ -61,16 +61,61 @@ class BookingController extends Controller
         'status' => 'pending',
     ]);
 
-    return redirect()->route('booking.index')->with('success', 'Booking berhasil, menunggu konfirmasi.');
-}
+    return redirect()->route('booking.show', ['id' => $newBooking->id]);
+    }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show($id)
     {
-        //
+        // 1. Ambil data booking spesifik berdasarkan ID
+        $booking = ZukiraBooking::with(['user', 'lapangan'])->findOrFail($id);
+
+        // 2. (PENTING) Otorisasi untuk keamanan
+        // Pastikan hanya user yang membuat booking yang bisa melihat detailnya.
+        if (Auth::id() !== $booking->user_id) {
+            abort(403, 'AKSES DITOLAK'); // Tampilkan halaman larangan akses
+        }
+
+          $jamMulai = \Carbon\Carbon::parse($booking->jam_mulai);
+    $jamSelesai = \Carbon\Carbon::parse($booking->jam_selesai);
+
+    // Jika jam selesai lebih kecil dari jam mulai (lewat tengah malam)
+    if ($jamSelesai->lt($jamMulai)) {
+        $jamSelesai->addDay(); // Tambah 1 hari ke jam selesai
     }
+
+    $durasiMenit = $jamSelesai->diffInMinutes($jamMulai);
+    $durasiJam = round($durasiMenit / 60, 2); // Bulatkan ke 2 desimal
+    
+    // 2. Ambil harga per jam
+    $hargaPerJam = $booking->lapangan->harga_per_jam;
+
+    // 3. Hitung subtotal
+    $subtotal = $durasiJam * $hargaPerJam;
+
+    // 4. Tentukan biaya lainnya
+    $biayaAdmin = 2500;
+    $persenPPN = 11; // 11%
+
+    // 5. Hitung PPN dari subtotal
+    $ppn = ($subtotal * $persenPPN) / 100;
+
+    // 6. Hitung Total Pembayaran
+    $totalPembayaran = $subtotal + $biayaAdmin + $ppn;
+
+    // --- AKHIR LOGIKA KALKULASI ---
+
+    return view('booking.detail', [
+        'booking' => $booking,
+        'durasiJam' => $durasiJam,
+        'subtotal' => $subtotal,
+        'biayaAdmin' => $biayaAdmin,
+        'ppn' => $ppn,
+        'totalPembayaran' => $totalPembayaran
+    ]);
+}
 
     /**
      * Show the form for editing the specified resource.

@@ -10,6 +10,8 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Filament\Tables\Actions\Action;
+use App\Enums\BookingStatus;
 
 class ZukiraBookingResource extends Resource
 {
@@ -38,12 +40,12 @@ class ZukiraBookingResource extends Resource
                 Forms\Components\TimePicker::make('jam_selesai')
                     ->required(),
                 Forms\Components\Select::make('status')
-                    ->options([
-                        'pending' => 'Pending',
-                        'dikonfirmasi' => 'Dikonfirmasi',
-                        'selesai' => 'Selesai',
-                    ])
-                    ->required(),
+                ->options([
+                    'pending' => 'Pending',
+                    'dikonfirmasi' => 'Dikonfirmasi',
+                    'ditolak' => 'Ditolak',
+                ])
+                ->required(),
             ]);
     }
 
@@ -68,8 +70,13 @@ class ZukiraBookingResource extends Resource
                 Tables\Columns\TextColumn::make('jam_selesai')
                     ->time()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('status')
-                    ->searchable(),
+                Tables\Columns\BadgeColumn::make('status')
+                ->colors([
+                    'warning' => 'pending',
+                    'success' => 'dikonfirmasi',
+                    'danger' => 'ditolak', // Anda bisa tambahkan status lain
+                ])
+                ->formatStateUsing(fn ($state): string => ucfirst($state->value)),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable(),
@@ -79,10 +86,20 @@ class ZukiraBookingResource extends Resource
                     ->options([
                         'pending' => 'Pending',
                         'dikonfirmasi' => 'Dikonfirmasi',
-                        'selesai' => 'Selesai',
+                        'ditolak' => 'Ditolak',
                     ]),
             ])
             ->actions([
+                 Action::make('konfirmasi')
+                ->label('Konfirmasi')
+                ->action(function (ZukiraBooking $record) {
+                    $record->status = BookingStatus::DIKONFIRMASI;
+                    $record->save();
+                })
+                ->icon('heroicon-o-check-circle')
+                ->color('success')
+                ->requiresConfirmation() // <-- Tampilkan modal konfirmasi "Are you sure?"
+                ->visible(fn (ZukiraBooking $record): bool => $record->status === BookingStatus::PENDING), // <-- Hanya tampil jika status 'pending'
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),

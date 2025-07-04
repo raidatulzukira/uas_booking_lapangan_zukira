@@ -1,11 +1,18 @@
+@php
+    // Impor Enum untuk digunakan di dalam view
+    use App\Enums\BookingStatus;
+@endphp
+
 @extends('layouts.master')
 
 @section('content')
 <div class="container py-5">
     <h2 class="mb-4 text-pink fw-bold text-center" style="font-size:2rem; letter-spacing:1px;">Riwayat Booking Anda</h2>
+    
     @if(session('success'))
         <div class="alert alert-success text-center shadow-sm rounded-pill px-4 py-2 mb-4" style="font-size:1.1rem;">{{ session('success') }}</div>
     @endif
+
     @forelse ($bookings as $booking)
         <div class="card mb-5 border-0 rounded-4 shadow-lg position-relative overflow-hidden" style="background: linear-gradient(120deg, #fff 80%, #ffe4ef 100%);">
             <div class="row g-0 align-items-center">
@@ -24,17 +31,21 @@
                                 <span class="fw-semibold">{{ $booking->jam_mulai }} - {{ $booking->jam_selesai }}</span>
                             </div>
                         </div>
+
                         <div class="mb-3">
                             <span class="fw-semibold">Status:</span>
-                            @if($booking->status === 'pending')
+                            {{-- Menggunakan Enum untuk perbandingan status --}}
+                            @if($booking->status === BookingStatus::PENDING)
                                 <span class="badge bg-warning text-dark shadow-sm px-3 py-2 rounded-pill" style="font-size:.95rem;">Menunggu Konfirmasi</span>
-                            @elseif($booking->status === 'dikonfirmasi')
+                            @elseif($booking->status === BookingStatus::DIKONFIRMASI)
                                 <span class="badge bg-success shadow-sm px-3 py-2 rounded-pill" style="font-size:.95rem;">Dikonfirmasi</span>
-                            @elseif($booking->status === 'selesai')
+                            @elseif($booking->status->value === 'selesai') {{-- 'selesai' mungkin belum ada di Enum, jadi kita cek valuenya --}}
                                 <span class="badge bg-info text-white shadow-sm px-3 py-2 rounded-pill" style="font-size:.95rem;">Selesai</span>
                             @endif
                         </div>
-                        @if($booking->status === 'dikonfirmasi')
+
+                        {{-- Menampilkan info pembayaran hanya jika status Dikonfirmasi --}}
+                        @if($booking->status === BookingStatus::DIKONFIRMASI)
                             <div class="alert alert-info mt-3 mb-0 d-flex align-items-center gap-2 rounded-3 shadow-sm" style="font-size:1rem;">
                                 <i class="fa fa-money-bill-wave me-2 text-pink"></i>
                                 <span>Silahkan bayar ke no rek <b>788965</b> atas nama Zukira Booking.</span>

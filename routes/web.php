@@ -8,6 +8,8 @@ use App\Http\Controllers\LapanganController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\LandingController;
+use App\Http\Controllers\PemesananController;
+
 // use App\Http\Middleware\CheckUserRole
 
 // Route::get('/home', function () {
@@ -56,4 +58,16 @@ Route::resource('lapangan', LapanganController::class)->only(['index']);
 // Route::middleware(['auth', 'checkuserrole:admin'])->group(function () {
 //     Route::get('/admin/bookings', [BookingController::class, 'adminIndex'])->name('booking.admin');
 //     Route::patch('/admin/bookings/{id}/konfirmasi', [BookingController::class, 'konfirmasi'])->name('booking.konfirmasi');
+
+
+
+// Route untuk menampilkan halaman form booking
+Route::get('/booking', [BookingController::class, 'create'])->name('booking.create');
+
+// Route untuk MENYIMPAN data dari form booking
+Route::post('/booking', [BookingController::class, 'store'])->name('booking.store');
 // });
+Route::get('/riwayat-booking', [BookingController::class, 'index'])->name('booking.index');
+
+Route::get('/booking/detail/{id}', [BookingController::class, 'show'])->name('booking.show');
+

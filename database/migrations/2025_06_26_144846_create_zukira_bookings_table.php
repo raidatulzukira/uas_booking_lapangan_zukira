@@ -18,7 +18,7 @@ return new class extends Migration
             $table->date('tanggal');
             $table->time('jam_mulai');
             $table->time('jam_selesai');
-            $table->enum('status', ['pending', 'dikonfirmasi', 'selesai'])->default('pending');
+            $table->enum('status', ['pending', 'dikonfirmasi', 'ditolak'])->default('pending');
             $table->timestamps();
 
         });
