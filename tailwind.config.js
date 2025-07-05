@@ -1,14 +1,18 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-    content: [
-        './app/Filament/**/*.php',
-        './resources/views/filament/**/*.blade.php',
-        './resources/**/*.js',
-        './resources/**/*.vue',
-        './vendor/filament/**/*.blade.php',
-    ],
-    theme: {
-        extend: {},
+  darkMode: 'class', // <-- Tambahkan baris ini
+  content: [
+    "./resources/**/*.blade.php",
+    "./resources/**/*.js",
+    "./resources/**/*.vue",
+  ],
+  theme: {
+    extend: {
+        fontFamily: {
+            // Menambahkan font Inter ke dalam konfigurasi
+            sans: ['Inter', 'sans-serif'],
+        },
     },
-    plugins: [],
-}
+  },
+  plugins: [],
+};
