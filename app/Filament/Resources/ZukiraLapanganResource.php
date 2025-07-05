@@ -39,10 +39,16 @@ class ZukiraLapanganResource extends Resource
                     ->required()
                     ->maxLength(65535)
                     ->columnSpanFull(),
-                Forms\Components\TextInput::make('harga')
+                Forms\Components\TextInput::make('price_per_day')
+                    ->label('Harga per Hari')
                     ->required()
-                    ->numeric()
-                    ->prefix('IDR'),
+                    ->extraAttributes([
+                        'x-data' => '',
+                        'x-on:input' => 'formatRupiah($event)',
+                        'inputmode' => 'numeric',
+                    ])
+                     ->prefix('Rp '),
+
                 Forms\Components\Select::make('status')
                     ->options([
                         'tersedia' => 'Tersedia',

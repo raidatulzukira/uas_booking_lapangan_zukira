@@ -10,12 +10,11 @@ use Carbon\Carbon;
 
 class BookingController extends Controller
 {
-    /**
-     * Menampilkan riwayat booking milik customer yang sedang login.
-     */
+    
     public function index()
     {
-        $bookings = ZukiraBooking::with('zukiraLapangan') // Perbaikan: Menggunakan nama relasi yang benar
+        // PERBAIKAN: Menggunakan nama relasi 'lapangan' yang baru dan lebih standar.
+        $bookings = ZukiraBooking::with('lapangan')
             ->where('user_id', Auth::id())
             ->latest()
             ->get();
@@ -27,7 +26,8 @@ class BookingController extends Controller
      */
     public function adminIndex()
     {
-        $bookings = ZukiraBooking::with(['user', 'zukiraLapangan'])->latest()->get(); // Perbaikan: Menggunakan nama relasi yang benar
+        // PERBAIKAN: Menggunakan nama relasi 'lapangan' yang baru.
+        $bookings = ZukiraBooking::with(['user', 'lapangan'])->latest()->get();
         return view('booking.index_admin', compact('bookings'));
     }
 
@@ -45,66 +45,42 @@ class BookingController extends Controller
      */
     public function store(Request $request)
     {
+        // --- PERBAIKAN VALIDASI ---
+        // Menambahkan validasi format jam untuk memastikan data selalu benar.
         $request->validate([
             'lapangan_id' => 'required|exists:zukira_lapangans,id',
             'tanggal' => 'required|date|after_or_equal:today',
-            'jam_mulai' => 'required',
-            'jam_selesai' => 'required|after:jam_mulai',
+            'jam_mulai' => 'required|date_format:H:i', // Memastikan format jam adalah HH:MM (e.g., 20:00)
+            'jam_selesai' => 'required|date_format:H:i|after:jam_mulai', // Memastikan format benar & setelah jam mulai
         ]);
         
-        // Di sini terjadi error karena nama kolom di form dan di create berbeda
-        // Seharusnya 'lapangan_id' menjadi 'zukira_lapangan_id' saat disimpan
+        // Kode pembuatan booking ini sudah benar dan tidak perlu diubah.
         $newBooking = ZukiraBooking::create([
             'user_id' => Auth::id(),
-            'zukira_lapangan_id' => $request->lapangan_id, // Perbaikan: Sesuaikan nama kolom
-            'waktu_mulai' => Carbon::parse($request->tanggal . ' ' . $request->jam_mulai), // Digabung menjadi datetime
-            'waktu_selesai' => Carbon::parse($request->tanggal . ' ' . $request->jam_selesai), // Digabung menjadi datetime
+            'lapangan_id' => $request->lapangan_id,
+            'tanggal' => $request->tanggal,
+            'jam_mulai' => Carbon::parse($request->tanggal . ' ' . $request->jam_mulai),
+            'jam_selesai' => Carbon::parse($request->tanggal . ' ' . $request->jam_selesai),
             'status' => 'pending',
         ]);
 
-        // Perbaikan: Redirect ke rute 'booking.detail' yang benar
+        // Redirect ini juga sudah benar.
         return redirect()->route('booking.detail', ['id' => $newBooking->id])
                          ->with('success', 'Booking berhasil dibuat! Mohon tunggu konfirmasi admin.');
     }
 
-    /**
-     * Menampilkan halaman detail dari sebuah booking.
-     * Nama method ini 'detail' agar sesuai dengan routes/web.php
-     */
+    
     public function detail($id)
     {
-        // Memuat relasi 'user' dan 'zukiraLapangan' dengan benar
-        $booking = ZukiraBooking::with(['user', 'zukiraLapangan'])->findOrFail($id);
+        // Controller hanya perlu mengambil data. Semua perhitungan ada di Model.
+        $booking = ZukiraBooking::with(['user', 'lapangan'])->findOrFail($id);
 
-        // Menghitung durasi sewa
-        $waktuMulai = Carbon::parse($booking->waktu_mulai);
-        $waktuSelesai = Carbon::parse($booking->waktu_selesai);
-        $durasiJam = $waktuSelesai->diffInHours($waktuMulai);
-
-        // Menghitung detail pembayaran dengan aman
-        $subtotalSewa = 0;
-        if ($booking->zukiraLapangan) {
-            $hargaSewaPerJam = $booking->zukiraLapangan->harga_sewa;
-            $subtotalSewa = $durasiJam * $hargaSewaPerJam;
-        }
-        
-        $biayaAdmin = 2500;
-        $ppn = $subtotalSewa * 0.11;
-        $totalPembayaran = $subtotalSewa + $biayaAdmin + $ppn;
-
-        $pembayaran = [
-            'subtotal' => $subtotalSewa,
-            'admin' => $biayaAdmin,
-            'ppn' => $ppn,
-            'total' => $totalPembayaran,
-        ];
-
+        // Langsung kirim object $booking ke view.
         return view('booking.detail', [
             'booking' => $booking,
-            'durasi' => $durasiJam,
-            'pembayaran' => $pembayaran,
         ]);
     }
+
     
     /**
      * Mengubah status booking menjadi 'dikonfirmasi' oleh Admin.

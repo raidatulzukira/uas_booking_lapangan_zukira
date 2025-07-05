@@ -5,60 +5,38 @@ namespace App\Http\Controllers;
 use App\Models\ZukiraLapangan;
 use App\Models\ZukiraReview;
 use Illuminate\Http\Request;
-
 use Illuminate\Support\Facades\Storage;
 
 class LapanganController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Menampilkan daftar semua lapangan (untuk admin atau halaman utama lapangan).
      */
-
-     // Untuk admin - tampilkan semua lapangan
     public function index()
     {
-        $lapangans = ZukiraLapangan::all();
+        $lapangans = ZukiraLapangan::latest()->get();
         return view('lapangan.index', compact('lapangans'));
     }
 
-
-
-    // public function index(Request $request)
-    // {
-    //     $query = \App\Models\ZukiraLapangan::query();
-
-    //     if ($request->has('search')) {
-    //         $query->where('nama', 'like', '%' . $request->search . '%');
-    //     }
-
-    //     $lapangans = $query->get();
-    //     $reviews = \App\Models\ZukiraReview::with(['user', 'lapangan'])->latest()->take(3)->get();
-
-    //     return view('landing', compact('lapangans', 'reviews'));
-    // }
-
-
     /**
-     * Show the form for creating a new resource.
+     * Menampilkan form untuk membuat lapangan baru.
      */
-    // Form tambah lapangan
     public function create()
     {
         return view('lapangan.create');
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Menyimpan lapangan baru ke database.
      */
-    // Simpan lapangan baru
     public function store(Request $request)
     {
         $request->validate([
-            'nama' => 'required',
-            'tipe' => 'required',
-            'lokasi' => 'required',
-            'harga' => 'required|numeric',
-            'foto' => 'required|image|mimes:jpeg,png,jpg|max:2048'
+            'nama' => 'required|string|max:255',
+            'tipe' => 'required|string|max:255',
+            'lokasi' => 'required|string',
+            'harga' => 'required|numeric|min:0',
+            'foto' => 'required|image|mimes:jpeg,png,jpg,webp|max:2048'
         ]);
 
         $path = $request->file('foto')->store('lapangan', 'public');
@@ -74,11 +52,22 @@ class LapanganController extends Controller
         return redirect()->route('lapangan.index')->with('success', 'Lapangan berhasil ditambahkan.');
     }
 
+    /**
+     * Menampilkan halaman detail untuk satu lapangan.
+     * Method ini ditambahkan untuk melengkapi Route::resource.
+     */
+    public function show($id)
+    {
+        $lapangan = ZukiraLapangan::findOrFail($id);
+        // Anda bisa membuat view 'lapangan.show' jika diperlukan.
+        // Untuk saat ini, kita arahkan ke halaman booking.
+        return redirect()->route('booking.create', ['lapangan_id' => $lapangan->id]);
+    }
+
 
     /**
-     * Show the form for editing the specified resource.
+     * Menampilkan form untuk mengedit lapangan.
      */
-    // Form edit lapangan
     public function edit($id)
     {
         $lapangan = ZukiraLapangan::findOrFail($id);
@@ -86,25 +75,27 @@ class LapanganController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Memperbarui data lapangan di database.
      */
-    // Update lapangan
     public function update(Request $request, $id)
     {
         $lapangan = ZukiraLapangan::findOrFail($id);
 
         $request->validate([
-            'nama' => 'required',
-            'tipe' => 'required',
-            'lokasi' => 'required',
-            'harga' => 'required|numeric',
-            'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
+            'nama' => 'required|string|max:255',
+            'tipe' => 'required|string|max:255',
+            'lokasi' => 'required|string',
+            'harga' => 'required|numeric|min:0',
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048'
         ]);
 
         $data = $request->only(['nama', 'tipe', 'lokasi', 'harga']);
 
         if ($request->hasFile('foto')) {
-            Storage::disk('public')->delete($lapangan->foto);
+            // Hapus foto lama sebelum menyimpan yang baru
+            if ($lapangan->foto) {
+                Storage::disk('public')->delete($lapangan->foto);
+            }
             $data['foto'] = $request->file('foto')->store('lapangan', 'public');
         }
 
@@ -114,25 +105,32 @@ class LapanganController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Menghapus lapangan dari database.
      */
-    // Hapus lapangan
     public function destroy($id)
     {
         $lapangan = ZukiraLapangan::findOrFail($id);
-        Storage::disk('public')->delete($lapangan->foto);
+        
+        // Hapus foto dari storage
+        if ($lapangan->foto) {
+            Storage::disk('public')->delete($lapangan->foto);
+        }
+        
         $lapangan->delete();
 
         return redirect()->route('lapangan.index')->with('success', 'Lapangan berhasil dihapus.');
     }
 
-    // Untuk halaman publik
+    /**
+     * Menampilkan data untuk halaman landing/beranda.
+     */
     public function landing(Request $request)
     {
         $query = ZukiraLapangan::query();
 
-        if ($request->has('search')) {
-            $query->where('nama', 'like', '%' . $request->search . '%');
+        if ($request->filled('search')) {
+            $query->where('nama', 'like', '%' . $request->search . '%')
+                  ->orWhere('tipe', 'like', '%' . $request->search . '%');
         }
 
         $lapangans = $query->get();
@@ -140,5 +138,4 @@ class LapanganController extends Controller
 
         return view('landing', compact('lapangans', 'reviews'));
     }
-
 }

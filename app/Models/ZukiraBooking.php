@@ -2,39 +2,89 @@
 
 namespace App\Models;
 
-use App\Enums\BookingStatus; // <-- Impor Enum dari lokasi yang benar
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Carbon\Carbon;
 
 class ZukiraBooking extends Model
 {
     use HasFactory;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
-    // app/Models/ZukiraBooking.php
-protected $fillable = [
-    'user_id',
-    'zukira_lapangan_id',
-    'waktu_mulai',
-    'waktu_selesai',
-    'total_harga',
-    'status', // <-- TAMBAHKAN INI
-];
-
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'status' => BookingStatus::class, // <-- Mengubah status menjadi objek Enum
+    protected $fillable = [
+        'user_id',
+        'lapangan_id',
+        'tanggal',
+        'jam_mulai',
+        'jam_selesai',
+        'status',
     ];
 
-    public function user() { return $this->belongsTo(User::class); }
-    public function lapangan() { return $this->belongsTo(ZukiraLapangan::class); }
-    public function payment() { return $this->hasOne(ZukiraPayment::class); }
+    /**
+     * The accessors to append to the model's array form.
+     * Ini memastikan atribut virtual kita selalu ada saat model diubah jadi array/JSON.
+     * @var array
+     */
+    protected $appends = [
+        'duration_in_hours', 
+        'total_price', 
+        'admin_fee', 
+        'tax', 
+        'final_total'
+    ];
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function lapangan(): BelongsTo
+    {
+        return $this->belongsTo(ZukiraLapangan::class, 'lapangan_id');
+    }
+
+    // --- LOGIKA PERHITUNGAN TERPUSAT YANG PALING AMAN ---
+
+    public function getDurationInHoursAttribute()
+    {
+        if (!$this->jam_mulai || !$this->jam_selesai) {
+            return 0;
+        }
+        
+        try {
+            $start = Carbon::parse($this->jam_mulai);
+            $end = Carbon::parse($this->jam_selesai);
+            
+            // PERBAIKAN: Menggunakan abs() untuk memastikan durasi selalu positif.
+            return round(abs($end->diffInMinutes($start)) / 60, 2);
+        } catch (\Exception $e) {
+            return 0; // Jika format waktu salah, kembalikan 0.
+        }
+    }
+
+    public function getTotalPriceAttribute()
+    {
+        // PERBAIKAN: Memeriksa relasi 'lapangan' yang sudah di-load dari controller.
+        // Ini sangat efisien karena tidak melakukan query database baru.
+         if ($this->relationLoaded('lapangan') && $this->lapangan && $this->lapangan->harga > 0) {
+            return $this->lapangan->harga * $this->duration_in_hours;
+        }
+        
+        return 0; // Kembalikan 0 jika harga tidak ada.
+    }
+
+    public function getAdminFeeAttribute()
+    {
+        return 2500;
+    }
+
+    public function getTaxAttribute()
+    {
+        return $this->total_price * 0.11;
+    }
+
+    public function getFinalTotalAttribute()
+    {
+        return $this->total_price + $this->admin_fee + $this->tax;
+    }
 }

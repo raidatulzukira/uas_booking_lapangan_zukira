@@ -3,49 +3,46 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\ZukiraBookingResource\Pages;
-use App\Filament\Resources\ZukiraBookingResource\RelationManagers;
 use App\Models\ZukiraBooking;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Filament\Tables\Actions\Action;
-use App\Enums\BookingStatus;
+use Illuminate\Support\Str;
 
 class ZukiraBookingResource extends Resource
 {
     protected static ?string $model = ZukiraBooking::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-calendar';
-
-    protected static ?string $recordTitleAttribute = 'id';
+    protected static ?string $navigationIcon = 'heroicon-o-calendar-days';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
+                // Skema form Anda akan ada di sini
+                // Contoh:
                 Forms\Components\Select::make('user_id')
                     ->relationship('user', 'name')
-                    ->required()
-                    ->searchable(),
+                    ->required(),
                 Forms\Components\Select::make('lapangan_id')
                     ->relationship('lapangan', 'nama')
-                    ->required()
-                    ->searchable(),
+                    ->required(),
                 Forms\Components\DatePicker::make('tanggal')
                     ->required(),
-                Forms\Components\TimePicker::make('jam_mulai')
+                Forms\Components\DateTimePicker::make('jam_mulai')
                     ->required(),
-                Forms\Components\TimePicker::make('jam_selesai')
+                Forms\Components\DateTimePicker::make('jam_selesai')
                     ->required(),
                 Forms\Components\Select::make('status')
-                ->options([
-                    'pending' => 'Pending',
-                    'dikonfirmasi' => 'Dikonfirmasi',
-                    'ditolak' => 'Ditolak',
-                ])
-                ->required(),
+                    ->options([
+                        'pending' => 'Pending',
+                        'dikonfirmasi' => 'Dikonfirmasi',
+                        'selesai' => 'Selesai',
+                        'dibatalkan' => 'Dibatalkan',
+                    ])
+                    ->required(),
             ]);
     }
 
@@ -53,56 +50,63 @@ class ZukiraBookingResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('id')
-                    ->searchable(),
                 Tables\Columns\TextColumn::make('user.name')
+                    ->label('Pemesan')
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('lapangan.nama')
+                    ->label('Lapangan')
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('tanggal')
-                    ->date()
+                    ->date('d M Y')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('jam_mulai')
-                    ->time()
-                    ->sortable(),
+                    ->dateTime('H:i')
+                    ->label('Mulai'),
                 Tables\Columns\TextColumn::make('jam_selesai')
-                    ->time()
-                    ->sortable(),
-                Tables\Columns\BadgeColumn::make('status')
-                ->colors([
-                    'warning' => 'pending',
-                    'success' => 'dikonfirmasi',
-                    'danger' => 'ditolak', // Anda bisa tambahkan status lain
-                ])
-                ->formatStateUsing(fn ($state): string => ucfirst($state->value)),
+                    ->dateTime('H:i')
+                    ->label('Selesai'),
+                
+                // --- PERBAIKAN DI SINI ---
+                Tables\Columns\TextColumn::make('status')
+                    ->badge() // Menggunakan badge untuk tampilan yang lebih baik
+                    ->formatStateUsing(fn (string $state): string => ucfirst($state)) // Mengubah format teks menjadi Kapital di awal
+                    ->color(fn (string $state): string => match ($state) {
+                        'pending' => 'warning',
+                        'dikonfirmasi' => 'success',
+                        'selesai' => 'primary',
+                        'dibatalkan' => 'danger',
+                        default => 'gray',
+                    }),
+                
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
                     ->options([
                         'pending' => 'Pending',
                         'dikonfirmasi' => 'Dikonfirmasi',
-                        'ditolak' => 'Ditolak',
-                    ]),
+                        'selesai' => 'Selesai',
+                        'dibatalkan' => 'Dibatalkan',
+                    ])
             ])
             ->actions([
-                 Action::make('konfirmasi')
-                ->label('Konfirmasi')
-                ->action(function (ZukiraBooking $record) {
-                    $record->status = BookingStatus::DIKONFIRMASI;
-                    $record->save();
-                })
-                ->icon('heroicon-o-check-circle')
-                ->color('success')
-                ->requiresConfirmation() // <-- Tampilkan modal konfirmasi "Are you sure?"
-                ->visible(fn (ZukiraBooking $record): bool => $record->status === BookingStatus::PENDING), // <-- Hanya tampil jika status 'pending'
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                // Menambahkan Aksi Konfirmasi
+                Tables\Actions\Action::make('konfirmasi')
+                    ->label('Konfirmasi')
+                    ->action(function (ZukiraBooking $record) {
+                        $record->update(['status' => 'dikonfirmasi']);
+                    })
+                    ->requiresConfirmation()
+                    ->color('success')
+                    ->icon('heroicon-o-check-circle')
+                    ->visible(fn (ZukiraBooking $record): bool => $record->status === 'pending'), // Hanya tampil jika status pending
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -110,14 +114,14 @@ class ZukiraBookingResource extends Resource
                 ]),
             ]);
     }
-
+    
     public static function getRelations(): array
     {
         return [
-            RelationManagers\PaymentsRelationManager::class,
+            //
         ];
     }
-
+    
     public static function getPages(): array
     {
         return [
@@ -125,5 +129,5 @@ class ZukiraBookingResource extends Resource
             'create' => Pages\CreateZukiraBooking::route('/create'),
             'edit' => Pages\EditZukiraBooking::route('/{record}/edit'),
         ];
-    }
+    }    
 }
