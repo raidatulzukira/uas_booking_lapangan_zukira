@@ -15,14 +15,15 @@ class ZukiraBooking extends Model
      *
      * @var array<int, string>
      */
-    protected $fillable = [
-        'user_id',
-        'lapangan_id',
-        'tanggal',
-        'jam_mulai',
-        'jam_selesai',
-        'status',
-    ];
+    // app/Models/ZukiraBooking.php
+protected $fillable = [
+    'user_id',
+    'zukira_lapangan_id',
+    'waktu_mulai',
+    'waktu_selesai',
+    'total_harga',
+    'status', // <-- TAMBAHKAN INI
+];
 
     /**
      * The attributes that should be cast.

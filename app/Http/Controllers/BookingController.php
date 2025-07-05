@@ -6,156 +6,113 @@ use Illuminate\Http\Request;
 use App\Models\ZukiraBooking;
 use App\Models\ZukiraLapangan;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 class BookingController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Menampilkan riwayat booking milik customer yang sedang login.
      */
-    // Admin melihat semua booking
-    public function adminIndex()
-    {
-        $bookings = ZukiraBooking::with(['user', 'lapangan'])->latest()->get();
-        return view('booking.index_admin', compact('bookings'));
-    }
-
-    public function konfirmasi($id)
-    {
-        $booking = ZukiraBooking::findOrFail($id);
-        $booking->update(['status' => 'dikonfirmasi']);
-        return back()->with('success', 'Booking dikonfirmasi.');
-    }
-
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    // Form Booking untuk customer
-    public function create(Request $request)
-{
-    $lapangan = ZukiraLapangan::findOrFail($request->lapangan_id);
-    return view('booking.create', compact('lapangan'));
-}
-
-
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    // Simpan Booking
-    public function store(Request $request)
-{
-    $request->validate([
-        'lapangan_id' => 'required|exists:zukira_lapangans,id',
-        'tanggal' => 'required|date|after_or_equal:today',
-        'jam_mulai' => 'required',
-        'jam_selesai' => 'required|after:jam_mulai',
-    ]);
-
-    $newBooking = ZukiraBooking::create([
-        'user_id' => Auth::id(),
-        'lapangan_id' => $request->lapangan_id,
-        'tanggal' => $request->tanggal,
-        'jam_mulai' => $request->jam_mulai,
-        'jam_selesai' => $request->jam_selesai,
-        'status' => 'pending',
-    ]);
-
-    return redirect()->route('booking.show', ['id' => $newBooking->id]);
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show($id)
-    {
-        // 1. Ambil data booking spesifik berdasarkan ID
-        $booking = ZukiraBooking::with(['user', 'lapangan'])->findOrFail($id);
-
-        // 2. (PENTING) Otorisasi untuk keamanan
-        // Pastikan hanya user yang membuat booking yang bisa melihat detailnya.
-        if (Auth::id() !== $booking->user_id) {
-            abort(403, 'AKSES DITOLAK'); // Tampilkan halaman larangan akses
-        }
-
-          $jamMulai = \Carbon\Carbon::parse($booking->jam_mulai);
-    $jamSelesai = \Carbon\Carbon::parse($booking->jam_selesai);
-
-    // Jika jam selesai lebih kecil dari jam mulai (lewat tengah malam)
-    if ($jamSelesai->lt($jamMulai)) {
-        $jamSelesai->addDay(); // Tambah 1 hari ke jam selesai
-    }
-
-    $durasiMenit = $jamSelesai->diffInMinutes($jamMulai);
-    $durasiJam = round($durasiMenit / 60, 2); // Bulatkan ke 2 desimal
-    
-    // 2. Ambil harga per jam
-    $hargaPerJam = $booking->lapangan->harga_per_jam;
-
-    // 3. Hitung subtotal
-    $subtotal = $durasiJam * $hargaPerJam;
-
-    // 4. Tentukan biaya lainnya
-    $biayaAdmin = 2500;
-    $persenPPN = 11; // 11%
-
-    // 5. Hitung PPN dari subtotal
-    $ppn = ($subtotal * $persenPPN) / 100;
-
-    // 6. Hitung Total Pembayaran
-    $totalPembayaran = $subtotal + $biayaAdmin + $ppn;
-
-    // --- AKHIR LOGIKA KALKULASI ---
-
-    return view('booking.detail', [
-        'booking' => $booking,
-        'durasiJam' => $durasiJam,
-        'subtotal' => $subtotal,
-        'biayaAdmin' => $biayaAdmin,
-        'ppn' => $ppn,
-        'totalPembayaran' => $totalPembayaran
-    ]);
-}
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
-    }
-
-    // // Admin konfirmasi booking
-    // public function konfirmasi($id)
-    // {
-    //     $booking = ZukiraBooking::findOrFail($id);
-    //     $booking->update(['status' => 'dikonfirmasi']);
-    //     return back()->with('success', 'Booking telah dikonfirmasi.');
-    // }
-
-    // Customer melihat riwayat booking miliknya
     public function index()
     {
-        $bookings = ZukiraBooking::with('lapangan')
+        $bookings = ZukiraBooking::with('zukiraLapangan') // Perbaikan: Menggunakan nama relasi yang benar
             ->where('user_id', Auth::id())
             ->latest()
             ->get();
         return view('booking.index', compact('bookings'));
+    }
+
+    /**
+     * Menampilkan semua booking untuk dilihat oleh Admin.
+     */
+    public function adminIndex()
+    {
+        $bookings = ZukiraBooking::with(['user', 'zukiraLapangan'])->latest()->get(); // Perbaikan: Menggunakan nama relasi yang benar
+        return view('booking.index_admin', compact('bookings'));
+    }
+
+    /**
+     * Menampilkan form untuk membuat booking baru.
+     */
+    public function create(Request $request)
+    {
+        $lapangan = ZukiraLapangan::findOrFail($request->lapangan_id);
+        return view('booking.create', compact('lapangan'));
+    }
+
+    /**
+     * Menyimpan booking baru ke database.
+     */
+    public function store(Request $request)
+    {
+        $request->validate([
+            'lapangan_id' => 'required|exists:zukira_lapangans,id',
+            'tanggal' => 'required|date|after_or_equal:today',
+            'jam_mulai' => 'required',
+            'jam_selesai' => 'required|after:jam_mulai',
+        ]);
+        
+        // Di sini terjadi error karena nama kolom di form dan di create berbeda
+        // Seharusnya 'lapangan_id' menjadi 'zukira_lapangan_id' saat disimpan
+        $newBooking = ZukiraBooking::create([
+            'user_id' => Auth::id(),
+            'zukira_lapangan_id' => $request->lapangan_id, // Perbaikan: Sesuaikan nama kolom
+            'waktu_mulai' => Carbon::parse($request->tanggal . ' ' . $request->jam_mulai), // Digabung menjadi datetime
+            'waktu_selesai' => Carbon::parse($request->tanggal . ' ' . $request->jam_selesai), // Digabung menjadi datetime
+            'status' => 'pending',
+        ]);
+
+        // Perbaikan: Redirect ke rute 'booking.detail' yang benar
+        return redirect()->route('booking.detail', ['id' => $newBooking->id])
+                         ->with('success', 'Booking berhasil dibuat! Mohon tunggu konfirmasi admin.');
+    }
+
+    /**
+     * Menampilkan halaman detail dari sebuah booking.
+     * Nama method ini 'detail' agar sesuai dengan routes/web.php
+     */
+    public function detail($id)
+    {
+        // Memuat relasi 'user' dan 'zukiraLapangan' dengan benar
+        $booking = ZukiraBooking::with(['user', 'zukiraLapangan'])->findOrFail($id);
+
+        // Menghitung durasi sewa
+        $waktuMulai = Carbon::parse($booking->waktu_mulai);
+        $waktuSelesai = Carbon::parse($booking->waktu_selesai);
+        $durasiJam = $waktuSelesai->diffInHours($waktuMulai);
+
+        // Menghitung detail pembayaran dengan aman
+        $subtotalSewa = 0;
+        if ($booking->zukiraLapangan) {
+            $hargaSewaPerJam = $booking->zukiraLapangan->harga_sewa;
+            $subtotalSewa = $durasiJam * $hargaSewaPerJam;
+        }
+        
+        $biayaAdmin = 2500;
+        $ppn = $subtotalSewa * 0.11;
+        $totalPembayaran = $subtotalSewa + $biayaAdmin + $ppn;
+
+        $pembayaran = [
+            'subtotal' => $subtotalSewa,
+            'admin' => $biayaAdmin,
+            'ppn' => $ppn,
+            'total' => $totalPembayaran,
+        ];
+
+        return view('booking.detail', [
+            'booking' => $booking,
+            'durasi' => $durasiJam,
+            'pembayaran' => $pembayaran,
+        ]);
+    }
+    
+    /**
+     * Mengubah status booking menjadi 'dikonfirmasi' oleh Admin.
+     */
+    public function konfirmasi($id)
+    {
+        $booking = ZukiraBooking::findOrFail($id);
+        $booking->update(['status' => 'dikonfirmasi']);
+        return back()->with('success', 'Booking telah dikonfirmasi.');
     }
 }

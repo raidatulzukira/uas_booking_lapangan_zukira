@@ -69,5 +69,5 @@ Route::post('/booking', [BookingController::class, 'store'])->name('booking.stor
 // });
 Route::get('/riwayat-booking', [BookingController::class, 'index'])->name('booking.index');
 
-Route::get('/booking/detail/{id}', [BookingController::class, 'show'])->name('booking.show');
+Route::get('/booking/detail/{id}', [BookingController::class, 'detail'])->name('booking.detail');
 
