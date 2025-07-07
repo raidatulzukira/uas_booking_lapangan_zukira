@@ -15,6 +15,8 @@
 
     <!-- Scripts -->
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
+
+    
 </head>
 <body>
     <div id="app">
@@ -76,5 +78,13 @@
             @yield('content')
         </main>
     </div>
+        <main class="py-4">
+            @yield('content')
+        </main>
+    </div>
+
+    @include('partials._popup_auth') // <-- TAMBAHKAN BARIS INI
+</body>
+</html>
 </body>
 </html>

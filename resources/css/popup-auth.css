@@ -1,0 +1,17 @@
+/* Style untuk tab di dalam modal */
+#authModal .nav-pills .nav-link {
+    background-color: #f8f9fa;
+    color: #333;
+    border-radius: 0.25rem;
+}
+
+#authModal .nav-pills .nav-link.active {
+    background-color: #dc3545; /* Warna merah sesuai tombol */
+    color: white;
+}
+
+/* Menghilangkan border pada modal content */
+#authModal .modal-content {
+    border: none;
+    border-radius: 0.5rem;
+}

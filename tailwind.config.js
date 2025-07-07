@@ -1,18 +1,17 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  darkMode: 'class', // <-- Tambahkan baris ini
   content: [
     "./resources/**/*.blade.php",
     "./resources/**/*.js",
-    "./resources/**/*.vue",
   ],
   theme: {
     extend: {
-        fontFamily: {
-            // Menambahkan font Inter ke dalam konfigurasi
-            sans: ['Inter', 'sans-serif'],
-        },
+        colors: {
+            'theme-pink': '#f26682',
+            'theme-pink-light': '#fed0e7',
+            'theme-pink-dark': '#ea3766',
+        }
     },
   },
   plugins: [],
-};
+}

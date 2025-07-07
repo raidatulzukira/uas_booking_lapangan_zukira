@@ -40,13 +40,21 @@ class LoginController extends Controller
         $this->middleware('auth')->only('logout');
     }
 
-    protected function authenticated($request, $user)
-    {
-        if ($user->role === 'admin') {
-            return redirect('/admin')->with('success', 'Anda berhasil Login, ' . $user->name . '!');
-        }
-        return redirect('/dashboard')->with('success', 'Anda berhasil Login, ' . $user->name . '!');
+    protected function authenticated(Request $request, $user)
+{
+    // Jika request datang dari AJAX (seperti popup kita)
+    if ($request->expectsJson()) {
+        // Tentukan URL redirect berdasarkan role
+        $redirectUrl = $user->role === 'admin' ? '/admin' : '/dashboard';
+        return response()->json(['redirect_url' => $redirectUrl]);
     }
+
+    // Jika login dari halaman biasa (bukan AJAX), lakukan redirect seperti biasa
+    if ($user->role === 'admin') {
+        return redirect('/admin')->with('success', 'Anda berhasil Login, ' . $user->name . '!');
+    }
+    return redirect('/dashboard')->with('success', 'Anda berhasil Login, ' . $user->name . '!');
+}
 
     public function logout(Request $request)
     {
