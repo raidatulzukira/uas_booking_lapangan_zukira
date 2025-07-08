@@ -4,7 +4,7 @@ namespace App\Enums;
 
 enum BookingStatus: string
 {
-    case PENDING = 'pending';
-    case DIKONFIRMASI = 'dikonfirmasi';
+    case MENUNGGU = 'menunggu';
+    case DITERIMA = 'diterima';
     case DITOLAK = 'ditolak';
 }

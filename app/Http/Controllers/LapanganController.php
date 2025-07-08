@@ -12,11 +12,37 @@ class LapanganController extends Controller
     /**
      * Menampilkan daftar semua lapangan (untuk admin atau halaman utama lapangan).
      */
-    public function index()
+     public function index(Request $request)
     {
-        $lapangans = ZukiraLapangan::latest()->get();
-        return view('lapangan.index', compact('lapangans'));
+        // 1. Mulai query ke database, JANGAN langsung panggil ->get()
+        $query = ZukiraLapangan::query();
+
+        // 2. Cek jika di URL ada parameter 'tipe' dan isinya bukan 'semua'
+        if ($request->filled('tipe') && $request->input('tipe') != 'semua') {
+            // Terapkan filter WHERE pada query
+            $query->where('tipe', $request->input('tipe'));
+        }
+
+         $query->when($request->filled('search'), function ($q) use ($request) {
+            $searchTerm = '%' . $request->input('search') . '%';
+            // Ganti 'nama_lapangan' dan 'lokasi' dengan nama kolom Anda
+            return $q->where(function($subQuery) use ($searchTerm) {
+                $subQuery->where('nama', 'like', $searchTerm)
+                         ->orWhere('lokasi', 'like', $searchTerm); // Contoh jika ingin cari berdasarkan lokasi juga
+            });
+        });
+
+        
+        // 3. Ambil data SETELAH semua filter diterapkan
+        // Di sini Anda bisa menambahkan order by, dll.
+        $lapangans = $query->latest()->get();
+
+        // 4. Kirim data yang SUDAH DIFILTER ke view
+        return view('lapangan.index', [
+            'lapangans' => $lapangans
+        ]);
     }
+
 
     /**
      * Menampilkan form untuk membuat lapangan baru.

@@ -11,17 +11,14 @@ class Authenticate extends Middleware
      * Get the path the user should be redirected to when they are not authenticated.
      */
     protected function redirectTo(Request $request): ?string
-    {
-        // Jika request BUKAN dari API...
-        if (! $request->expectsJson()) {
-            
-            // Aturan baru:
-            // 1. Buat sebuah pesan error di session.
-            // 2. Arahkan pengguna kembali ke halaman landing.
-            session()->flash('error', 'Anda harus login terlebih dahulu untuk melanjutkan.');
-            return route('landing');
-        }
-
+{
+    if ($request->expectsJson()) {
+        // Jika request adalah AJAX/expectsJson, JANGAN redirect.
+        // Biarkan exception handler yang menangani dan mengirim response 401.
         return null;
     }
+    
+    // Jika bukan request AJAX, redirect ke halaman login seperti biasa.
+    return route('login');
+}
 }

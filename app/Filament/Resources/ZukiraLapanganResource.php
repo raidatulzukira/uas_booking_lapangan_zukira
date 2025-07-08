@@ -39,7 +39,7 @@ class ZukiraLapanganResource extends Resource
                     ->required()
                     ->maxLength(65535)
                     ->columnSpanFull(),
-                Forms\Components\TextInput::make('price_per_day')
+                Forms\Components\TextInput::make('harga')
                     ->label('Harga per Hari')
                     ->required()
                     ->extraAttributes([

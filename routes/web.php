@@ -8,66 +8,52 @@ use App\Http\Controllers\LapanganController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\LandingController;
-use App\Http\Controllers\PemesananController;
+use App\Models\ZukiraBooking;
 
-// use App\Http\Middleware\CheckUserRole
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+*/
 
-// Route::get('/home', function () {
-//     return redirect('/dasboard');
-// });
-
-Route::get('/home', function () {
-    return redirect('/dasboard');
-
-});
-
-
-// Route::get('/dashboard', [HomeController::class, 'index'])->middleware(['auth', 'checkrole:customer']);
-Route::get('/dashboard', [HomeController::class, 'index'])->middleware(['auth', 'checkrole:customer']);
-
-// Route::get('/dashboard', function () {
-//     return 'Dashboard aman';
-// })->middleware(['auth']);
-
-
-
-// Route::get('/admin/dashboard', [AdminController::class, 'index'])
-//     ->middleware(['auth', 'checkrole:admin']);
-
-
-
-// Route::get('/dashboard', [App\Http\Controllers\HomeController::class, 'index'])->middleware(['auth', 'checkrole:customer'])->name('dashboard');
-
+// Rute untuk Tamu (Guest)
 Route::get('/', [LandingController::class, 'index'])->name('landing');
+Route::resource('lapangan', LapanganController::class)->only(['index']);
+Route::get('/lapangan/{id}', [LapanganController::class, 'show'])->name('lapangan.show'); // Beri nama untuk konsistensi
+Auth::routes(); // Rute login, register, dll.
 
+// Rute untuk Pengguna yang Sudah Login
+Route::middleware(['auth'])->group(function () {
+    
+    // Rute Khusus Customer
+    Route::middleware(['checkrole:customer'])->group(function() {
+        Route::get('/dashboard', [HomeController::class, 'index'])->name('dashboard');
+        Route::get('/home', fn() => redirect()->route('dashboard')); // Perbaikan typo dan redirect
 
-Route::get('/lapangan/{id}', [LapanganController::class, 'show']);
+        // Booking
+        Route::resource('booking', BookingController::class);
+        Route::get('/riwayat-booking', [BookingController::class, 'index'])->name('booking.index');
+        Route::get('/booking/detail/{id}', [BookingController::class, 'detail'])->name('booking.detail');
 
-Auth::routes();
+        // Review
+        Route::resource('review', ReviewController::class)->except(['index']);
 
-Route::middleware(['auth', 'checkrole:customer'])->group(function () {
-    Route::resource('booking', BookingController::class); // index, create, store, edit, update, destroy
-    Route::resource('review', ReviewController::class)->except(['index']);
-    Route::get('payments', [PaymentController::class, 'index']);
-    Route::post('payments/upload', [PaymentController::class, 'upload']);
-    // Route::get('/dashboard', [HomeController::class, 'index']);
+        // Payment
+        Route::get('/payment/{booking}', [PaymentController::class, 'show'])->name('payment.show');
+        Route::post('/payment/upload/{booking}', [PaymentController::class, 'upload'])->name('payment.upload');
+    });
+
+    // Rute API untuk Pengguna Login (Customer & Admin)
+    Route::get('/api/payment-status/{booking}', [PaymentController::class, 'checkStatus'])->name('payment.status');
 });
 
-Route::resource('lapangan', LapanganController::class)->only(['index']);
+// Rute API Khusus Admin
+Route::middleware(['auth', 'checkrole:admin'])->group(function() {
+    Route::get('/api/payment-history', [PaymentController::class, 'getPaymentHistory'])->name('payment.history');
+    // Rute admin lainnya bisa ditambahkan di sini
+});
 
-// Route::middleware(['auth', 'checkuserrole:admin'])->group(function () {
-//     Route::get('/admin/bookings', [BookingController::class, 'adminIndex'])->name('booking.admin');
-//     Route::patch('/admin/bookings/{id}/konfirmasi', [BookingController::class, 'konfirmasi'])->name('booking.konfirmasi');
-
-
-
-// Route untuk menampilkan halaman form booking
-Route::get('/booking', [BookingController::class, 'create'])->name('booking.create');
-
-// Route untuk MENYIMPAN data dari form booking
-Route::post('/booking', [BookingController::class, 'store'])->name('booking.store');
-// });
-Route::get('/riwayat-booking', [BookingController::class, 'index'])->name('booking.index');
-
-Route::get('/booking/detail/{id}', [BookingController::class, 'detail'])->name('booking.detail');
-
+// Rute Publik (jika diperlukan)
+Route::get('/payment-success/{booking}', function(ZukiraBooking $booking) {
+    return view('payment.success', compact('booking'));
+})->name('payment.success');

@@ -31,6 +31,8 @@ class ZukiraPaymentResource extends Resource
                     ->numeric()
                     ->prefix('IDR'),
                 Forms\Components\FileUpload::make('bukti_transfer')
+                    ->maxSize(2048) // 2 MB
+                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/jpg'])
                     ->image()
                     ->directory('payments')
                     ->visibility('public')
@@ -38,8 +40,8 @@ class ZukiraPaymentResource extends Resource
                 Forms\Components\Select::make('status_verifikasi')
                     ->options([
                         'menunggu' => 'Menunggu',
-                        'valid' => 'Valid',
-                        'tidak valid' => 'Tidak Valid',
+                        'diterima' => 'Diterima',
+                        'ditolak' => 'Ditolak',
                     ])
                     ->required(),
             ]);
@@ -70,15 +72,27 @@ class ZukiraPaymentResource extends Resource
                 Tables\Filters\SelectFilter::make('status_verifikasi')
                     ->options([
                         'menunggu' => 'Menunggu',
-                        'valid' => 'Valid',
-                        'tidak valid' => 'Tidak Valid',
+                        'diterima' => 'Diterima',
+                        'ditolak' => 'Ditolak',
                     ]),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
-            ])
+                Tables\Actions\Action::make('Approve')
+                    ->action(function (ZukiraPayment $record) {
+                        $record->update(['status_verifikasi' => 'approved']);
+
+                    })
+                    ->color('success'),
+                Tables\Actions\Action::make('Reject')
+                    ->action(function (ZukiraPayment $record) {
+                        $record->update(['status_verifikasi' => 'rejected']);
+
+                    })
+                    ->color('danger'),
+                   
+
+                ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),

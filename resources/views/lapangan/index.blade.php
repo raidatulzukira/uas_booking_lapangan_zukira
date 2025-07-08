@@ -18,6 +18,12 @@
             </button>
         </form>
 
+          @if(request('tipe') || request('search'))
+                        <a href="{{ url()->current() }}" class="flex items-center justify-center w-10 h-10 rounded-full bg-gray-200 text-gray-600 hover:bg-gray-300 transition" title="Reset Filter & Pencarian">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    @endif
+
         {{-- Tombol Filter Tipe --}}
         <div class="flex flex-wrap gap-2 items-center">
             <span class="font-semibold text-gray-700 mr-2">Filter Tipe:</span>

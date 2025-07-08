@@ -156,11 +156,13 @@
                         
                         {{-- Tombol Aksi Dinamis --}}
                         @if($booking->status === 'dikonfirmasi')
-                        <a href="#" class="w-full sm:w-auto px-6 py-3 bg-pink-500 hover:bg-pink-600 text-white font-semibold rounded-lg shadow-md transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2 flex items-center justify-center">
-                            <i class="fas fa-credit-card mr-2"></i>
-                            Lanjut ke Pembayaran
-                        </a>
-                        @else
+    <a href="{{ route('payment.show', $booking) }}" class="w-full sm:w-auto px-6 py-3 bg-pink-500 hover:bg-pink-600 text-white font-semibold rounded-lg shadow-md transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2 flex items-center justify-center">
+        <i class="fas fa-credit-card mr-2"></i>
+        Lanjut ke Pembayaran
+    </a>
+@else
+    {{-- ... kode untuk status lain ... --}}
+
                         <div class="flex flex-col sm:flex-row gap-3">
                             <a href="https://wa.me/6281213007587?text=Halo,%20saya%20ingin%20bertanya%20mengenai%20pesanan%20%23{{$booking->id}}" target="_blank" class="px-6 py-3 bg-pink-500 hover:bg-pink-700 text-white font-semibold rounded-lg shadow-md transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 flex items-center justify-center">
                                 <i class="fas fa-headset mr-2"></i>

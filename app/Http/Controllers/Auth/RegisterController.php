@@ -9,28 +9,20 @@ use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth; // ✅ PERBAIKAN: Tambahkan use Auth
 
 class RegisterController extends Controller
 {
-    /*
-    |--------------------------------------------------------------------------
-    | Register Controller
-    |--------------------------------------------------------------------------
-    |
-    | This controller handles the registration of new users as well as their
-    | validation and creation. By default this controller uses a trait to
-    | provide this functionality without requiring any additional code.
-    |
-    */
-
     use RegistersUsers;
 
     /**
      * Where to redirect users after registration.
      *
+     * ✅ PERBAIKAN: Arahkan ke dashboard setelah registrasi berhasil.
+     *
      * @var string
      */
-    protected $redirectTo = '/';
+    protected $redirectTo = '/dashboard';
 
     /**
      * Create a new controller instance.
@@ -53,7 +45,7 @@ class RegisterController extends Controller
         return Validator::make($data, [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'string', 'min:5','confirmed'],
+            'password' => ['required', 'string', 'min:5'], // 'confirmed' tidak diperlukan untuk AJAX
         ]);
     }
 
@@ -73,15 +65,29 @@ class RegisterController extends Controller
         ]);
     }
 
+    /**
+     * Handle a registration request for the application.
+     *
+     * ✅ PERBAIKAN: Seluruh method ini diubah untuk handle auto-login dan AJAX.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\JsonResponse
+     */
     public function register(Request $request)
     {
         $this->validator($request->all())->validate();
 
         event(new Registered($user = $this->create($request->all())));
 
-        // Jangan login otomatis
-        // $this->guard()->login($user);
+        // Langsung login-kan user yang baru dibuat
+        $this->guard()->login($user);
 
-        return redirect('/')->with('success', 'Registrasi berhasil! Silakan login.');
+        // Jika request datang dari popup (AJAX)
+        if ($request->wantsJson()) {
+            return response()->json(['status' => 'success'], 201);
+        }
+
+        // Jika registrasi dari halaman biasa, redirect ke dashboard
+        return redirect($this->redirectPath())->with('success', 'Registrasi berhasil! Selamat datang.');
     }
 }

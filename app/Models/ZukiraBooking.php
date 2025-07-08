@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Carbon\Carbon;
+use App\Models\ZukiraPayment;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class ZukiraBooking extends Model
 {
@@ -87,4 +89,9 @@ class ZukiraBooking extends Model
     {
         return $this->total_price + $this->admin_fee + $this->tax;
     }
+
+    public function payment()
+{
+    return $this->hasOne(ZukiraPayment::class, 'booking_id');
+}
 }

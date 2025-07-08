@@ -1,53 +1,71 @@
+@section('is_hero_page', true)
+
 @extends('layouts.tailwind')
 
 @section('content')
 
-{{-- Container utama untuk konten dashboard --}}
-<div class="container mx-auto px-4 py-6 md:py-8">
+{{-- Latar belakang utama halaman bisa putih atau warna lain --}}
+<div class="bg-white">
 
-    @if(session('success'))
-        <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded-md" role="alert">
-            <p class="font-bold">Sukses</p>
-            <p>{{ session('success') }}</p>
+    {{-- ========================================================== --}}
+    {{-- HERO SECTION BARU: GAMBAR SEBAGAI BACKGROUND FULL-WIDTH --}}
+    {{-- ========================================================== --}}
+    <div class="relative w-full min-h-[60vh] md:min-h-[70vh] flex items-center justify-center text-center bg-cover bg-center" style="background-image: url('{{ asset('images/nba.jpg') }}');">
+        
+        <div class="absolute top-0 left-0 w-full h-full bg-black opacity-50"></div>
+
+        <div class="relative z-10 p-4">
+            <p class="font-sans text-lg font-bold text-theme-pink-dark tracking-wider mb-2">ZUKIRA BOOKING</p>
+            <h1 class="font-serif text-4xl md:text-6xl font-bold text-white mb-4">Pesan Lapangan Favoritmu</h1>
+            <p class="font-sans text-md md:text-lg text-gray-200 max-w-2xl mx-auto mb-6">
+                Selamat datang, {{ Auth::user()->name }}! Kelola jadwal booking dan lihat riwayat booking Anda dengan mudah.
+            </p>
+            <a href="{{ route('lapangan.index') }}" class="inline-flex items-center gap-3 bg-theme-pink-dark text-white font-bold py-3 px-6 rounded-lg hover:bg-opacity-90 transition-all shadow-md">
+                <i class="fa fa-calendar-plus"></i>
+                <span>Booking Lapangan Baru</span>
+            </a>
         </div>
-    @endif
-
-    <div class="text-center p-8 md:p-12 rounded-2xl bg-gradient-to-br from-pink-100 via-white to-pink-50 mb-8">
-        <h1 class="text-3xl md:text-4xl font-bold text-theme-pink-dark mb-3">Selamat Datang, {{ Auth::user()->name }}!</h1>
-        <p class="text-md text-gray-600 max-w-2xl mx-auto">Lihat riwayat booking dan review yang pernah Anda berikan di bawah ini.</p>
-        <a href="{{ route('lapangan.index') }}" class="inline-block mt-6 bg-theme-pink-dark text-white font-bold py-3 px-8 rounded-full hover:bg-opacity-90 transition-transform transform hover:scale-105 shadow-lg">
-            Booking Lapangan Baru
-        </a>
     </div>
 
-    <div>
-        <h4 class="text-2xl font-bold text-gray-800 mb-4">Review Anda</h4>
-        <div class="space-y-4">
-            @if($reviews->isNotEmpty())
-                @foreach($reviews as $review)
-                <div class="bg-white rounded-xl shadow p-5 border-l-4 border-theme-pink-dark">
-                    <div class="flex justify-between items-start mb-2">
-                        <div>
-                            <span class="font-bold text-lg text-gray-800">{{ $review->lapangan->nama }}</span>
-                            <div class="text-yellow-400 mt-1">
-                                @for($i = 1; $i <= 5; $i++)
-                                    {{-- Menggunakan class 'opacity-40' untuk bintang yang tidak aktif --}}
-                                    <i class="fa fa-star {{ $i <= $review->rating ? '' : 'opacity-40' }}"></i>
-                                @endfor
-                                <span class="ml-2 text-sm text-gray-500 font-medium">{{ $review->rating }}/5</span>
+    {{-- =================================================== --}}
+    {{-- SISA KONTEN (REVIEW) - TETAP DI DALAM CONTAINER --}}
+    {{-- =================================================== --}}
+    <div class="container mx-auto px-4 py-8 md:py-12">
+        
+        @if(session('success'))
+            <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded-md" role="alert">
+                <p class="font-bold">Sukses</p>
+                <p>{{ session('success') }}</p>
+            </div>
+        @endif
+
+        <div>
+            <h4 class="font-serif text-3xl font-bold text-gray-800 mb-4">Review Anda</h4>
+            <div class="space-y-4">
+                @if($reviews->isNotEmpty())
+                    @foreach($reviews as $review)
+                    <div class="bg-white rounded-xl shadow-sm p-5 border-l-4 border-theme-pink-dark">
+                        <div class="flex justify-between items-start mb-2">
+                            <div>
+                                <span class="font-sans font-bold text-lg text-gray-800">{{ $review->lapangan->nama }}</span>
+                                <div class="text-theme-pink-dark mt-1">
+                                    @for($i = 1; $i <= 5; $i++)
+                                        <i class="fa fa-star {{ $i <= $review->rating ? '' : 'opacity-30' }}"></i>
+                                    @endfor
+                                    <span class="ml-2 text-sm text-gray-500 font-medium">{{ $review->rating }}/5</span>
+                                </div>
                             </div>
+                            <span class="text-gray-400 text-xs flex-shrink-0 ml-4">{{ \Carbon\Carbon::parse($review->created_at)->format('d M Y') }}</span>
                         </div>
-                        <span class="text-gray-400 text-xs flex-shrink-0 ml-4">{{ \Carbon\Carbon::parse($review->created_at)->format('d M Y') }}</span>
+                        <p class="font-sans text-gray-600 italic">"{{ $review->komentar }}"</p>
                     </div>
-                    <p class="text-gray-600 italic">"{{ $review->komentar }}"</p>
-                </div>
-                @endforeach
-            @else
-                <div class="text-center text-gray-500 py-8 px-4 rounded-xl bg-white shadow">Anda belum pernah memberikan review.</div>
-            @endif
+                    @endforeach
+                @else
+                    <div class="text-center text-gray-500 py-8 px-4 rounded-xl bg-white shadow-sm border">Anda belum pernah memberikan review.</div>
+                @endif
+            </div>
         </div>
+
     </div>
-
 </div>
-
 @endsection
