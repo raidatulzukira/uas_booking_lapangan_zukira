@@ -101,7 +101,7 @@
     <main class="flex-grow">
         @yield('content')
     </main>
-    
+
     {{-- Footer Utama --}}
     <footer class="bg-theme-pink text-white mt-auto">
         <div class="container mx-auto px-4 py-8">
@@ -146,6 +146,6 @@
 
     {{-- Script JavaScript dari CDN --}}
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    
+
 </body>
 </html>

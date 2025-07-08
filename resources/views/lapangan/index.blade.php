@@ -24,9 +24,9 @@
             <a href="?search={{ request('search') }}" class="px-4 py-1.5 rounded-full text-sm transition {{ !request('tipe') ? 'bg-theme-pink-dark text-white shadow' : 'bg-pink-100 text-theme-pink-dark hover:bg-pink-200' }}">
                 Semua
             </a>
-            @php 
+            @php
                 // Ambil semua tipe unik dari koleksi, bukan hanya yang ditampilkan di halaman ini
-                $tipeList = \App\Models\ZukiraLapangan::select('tipe')->distinct()->pluck('tipe'); 
+                $tipeList = \App\Models\ZukiraLapangan::select('tipe')->distinct()->pluck('tipe');
             @endphp
             @foreach($tipeList as $tipe)
                 <a href="?tipe={{ $tipe }}&search={{ request('search') }}" class="px-4 py-1.5 rounded-full text-sm transition {{ request('tipe') == $tipe ? 'bg-theme-pink-dark text-white shadow' : 'bg-pink-100 text-theme-pink-dark hover:bg-pink-200' }}">
@@ -44,7 +44,7 @@
                 @else
                     <div class="w-full h-56 bg-gray-200 flex items-center justify-center text-gray-400">Tanpa Gambar</div>
                 @endif
-                
+
                 <div class="p-5 flex flex-col flex-grow">
                     <h5 class="text-xl font-bold text-gray-800">{{ $lapangan->nama }}</h5>
                     <p class="mb-3 mt-1">

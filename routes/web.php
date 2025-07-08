@@ -71,3 +71,13 @@ Route::get('/riwayat-booking', [BookingController::class, 'index'])->name('booki
 
 Route::get('/booking/detail/{id}', [BookingController::class, 'detail'])->name('booking.detail');
 
+
+
+// Route::get('/review', 'App\Http\Controllers\ReviewController@index')->name('review.index');
+Route::get('/review', 'App\Http\Controllers\ReviewController@index')->name('review.index');
+Route::get('/review/create', 'App\Http\Controllers\ReviewController@create')->name('review.create');
+Route::post('/review', 'App\Http\Controllers\ReviewController@store')->name('review.store');
+Route::get('/review/{id}/edit', 'ReviewController@edit')->name('review.edit');
+Route::patch('/review/{id}', 'ReviewController@update')->name('review.update');
+Route::delete('/review/{id}', 'App\Http\Controllers\ReviewController@destroy')->name('review.destroy');
+
