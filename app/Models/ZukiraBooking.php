@@ -68,7 +68,7 @@ class ZukiraBooking extends Model
     {
         // PERBAIKAN: Memeriksa relasi 'lapangan' yang sudah di-load dari controller.
         // Ini sangat efisien karena tidak melakukan query database baru.
-         if ($this->relationLoaded('lapangan') && $this->lapangan && $this->lapangan->harga > 0) {
+        if ($this->lapangan && $this->lapangan->harga > 0) {
             return $this->lapangan->harga * $this->duration_in_hours;
         }
         
@@ -94,4 +94,6 @@ class ZukiraBooking extends Model
 {
     return $this->hasOne(ZukiraPayment::class, 'booking_id');
 }
+
+    
 }

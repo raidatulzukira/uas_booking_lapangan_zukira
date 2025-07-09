@@ -6,6 +6,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Models\ZukiraBooking;
+
 
 class User extends Authenticatable
 {
@@ -45,4 +47,15 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function bookings()
+{
+    return $this->hasMany(ZukiraBooking::class, 'user_id');
+}
+
+public function hasBooking()
+{
+    return $this->bookings()->exists();
+}
+
 }

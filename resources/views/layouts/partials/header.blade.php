@@ -62,6 +62,12 @@
     </button>
 
     {{-- Menu kanan --}}
+    
+<!-- Sisa kode navbar Anda di bawah sini -->
+<nav class=" ... ">
+    ...
+</nav>
+    
     <div class="collapse navbar-collapse mt-2 mt-lg-0" id="navbarNav">
       <ul class="navbar-nav ms-auto align-items-center">
         @if(Auth::check())
@@ -71,9 +77,9 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link text-white {{ request()->is('booking*') ? 'fw-bold bg-white text-pink rounded-3 px-3' : '' }}" href="/booking">
-                    <i class="fa fa-calendar-check me-1"></i> Riwayat Booking
-                </a>
+                <a class="nav-link text-white {{ request()->is('riwayat-booking') ? 'fw-bold bg-white text-pink rounded-3 px-3' : '' }}" href="{{ route('booking.riwayat') }}">
+    <i class="fa fa-calendar-check me-1"></i> Riwayat Booking
+</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link text-white {{ request()->is('lapangan*') ? 'fw-bold bg-white text-pink rounded-3 px-3' : '' }}" href="/lapangan">

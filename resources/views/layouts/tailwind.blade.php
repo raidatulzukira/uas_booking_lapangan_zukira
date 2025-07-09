@@ -66,52 +66,68 @@
     {{-- 1. State 'scrolled' ditambahkan ke x-data. Event scroll ditambahkan ke x-on --}}
     @if(View::hasSection('is_hero_page'))
         {{-- ## JIKA INI HALAMAN HERO (LANDING/DASHBOARD), GUNAKAN HEADER DINAMIS TRANSPARAN ## --}}
-        <header 
-            x-data="{ mobileMenuOpen: false, scrolled: false }" 
-            x-on:scroll.window="scrolled = (window.scrollY > 50)"
-            class="fixed top-0 w-full z-40"
-        >
-            <div class="transition-colors duration-300" :class="scrolled ? 'bg-theme-pink shadow-lg' : 'bg-transparent'">
-                <div class="container mx-auto px-4">
-                    <div class="flex items-center justify-between p-1 relative">
-                        <a href="{{ url('/') }}" class="absolute left-4 top-1/2 -translate-y-1/2 z-20">
-                            <img src="{{ asset('images/logo.png') }}" alt="Zukira Booking Logo" class="h-20 w-auto"> 
-                        </a>
-                        <nav class="hidden md:flex items-center space-x-2 w-full justify-end ml-24 text-white">
-                            {{-- ... (kode navigasi sama seperti sebelumnya) ... --}}
-                            @auth
-                                <a href="/dashboard" class="px-3 py-2 rounded-lg transition {{ request()->is('dashboard') ? 'nav-link-active' : '' }}" :class="scrolled ? 'hover:bg-white/20' : 'hover:bg-black/10'"><i class="fa fa-home me-1"></i> Dashboard</a>
-                                <a href="/booking" class="px-3 py-2 rounded-lg transition {{ request()->is('booking*') ? 'nav-link-active' : '' }}" :class="scrolled ? 'hover:bg-white/20' : 'hover:bg-black/10'"><i class="fa fa-calendar-check me-1"></i> Riwayat</a>
-                                <a href="/lapangan" class="px-3 py-2 rounded-lg transition {{ request()->is('lapangan*') ? 'nav-link-active' : '' }}" :class="scrolled ? 'hover:bg-white/20' : 'hover:bg-black/10'"><i class="fa fa-futbol me-1"></i> Lapangan</a>
-                                <a href="/review" class="px-3 py-2 rounded-lg transition {{ request()->is('review*') ? 'nav-link-active' : '' }}" :class="scrolled ? 'hover:bg-white/20' : 'hover:bg-black/10'"><i class="fa fa-star me-1"></i> Review</a>
-                            @endauth
-                             @guest
-                            <button @click="authModalOpen = true" class="px-4 py-2 rounded-lg transition" :class="scrolled ? 'hover:bg-white/20' : 'hover:bg-black/10'">Login</button>
-                            <button @click="authModalOpen = true" class="px-4 py-2 bg-white text-theme-pink-dark font-bold rounded-lg transition hover:bg-pink-100">Register</button>
-                        @endguest
-                        @auth
-                            <div x-data="{ dropdownOpen: false }" class="relative">
-                                <button @click="dropdownOpen = !dropdownOpen" class="bg-black/20 p-1 rounded-full focus:outline-none focus:ring-2 focus:ring-white/50">
-                                    <img src="{{ asset('images/user.png') }}" alt="Profile" class="w-8 h-8 rounded-full object-cover">
-                                </button>
-                                <div x-show="dropdownOpen" @click.away="dropdownOpen = false" x-transition class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-20 text-gray-800">
-                                    <a href="#" class="block px-4 py-2 text-sm hover:bg-gray-100"><i class="fa fa-user fa-fw mr-2"></i>Profile</a>
-                                    <div class="border-t border-gray-200"></div>
-                                    <form method="POST" action="{{ route('logout') }}">
-                                        @csrf
-                                        <button type="submit" class="w-full text-left block px-4 py-2 text-sm hover:bg-gray-100"><i class="fa fa-sign-out-alt fa-fw mr-2"></i>Logout</button>
-                                    </form>
-                                </div>
+        {{--
+    File: resources/views/layouts/tailwind.blade.php
+    Deskripsi: Perbaikan logika header untuk menghilangkan spasi putih.
+--}}
+
+{{-- ========================================================== --}}
+{{-- HEADER BARU YANG SUDAH DISATUKAN --}}
+{{-- ========================================================== --}}
+@php
+    // Tentukan jenis halaman di sini agar mudah dibaca
+    $isHeroPage = View::hasSection('is_hero_page');
+@endphp
+
+<header 
+        x-data="{ mobileMenuOpen: false, scrolled: false }" 
+        x-on:scroll.window="scrolled = (window.scrollY > 50)"
+        class="w-full z-40 fixed top-0 transition-colors duration-300"
+        :class="{ 'bg-theme-pink shadow-lg': scrolled || !{{ $isHeroPage ? 'true' : 'false' }}, 'bg-transparent': !scrolled && {{ $isHeroPage ? 'true' : 'false' }} }"
+    >
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between p-1 relative">
+                {{-- Logo --}}
+                <a href="{{ url('/') }}" class="@if($isHeroPage) absolute left-4 top-1/2 -translate-y-1/2 z-20 @endif">
+                    <img src="{{ asset('images/logo.png') }}" alt="Zukira Booking Logo" class="h-16 md:h-20 w-auto">
+                </a>
+
+                {{-- Navigasi Desktop (tidak ada perubahan di sini) --}}
+                <nav class="hidden md:flex items-center space-x-2 w-full justify-end @if($isHeroPage) ml-24 @endif text-white">
+                    @auth
+                        <a href="/dashboard" class="px-3 py-2 rounded-lg transition {{ request()->is('dashboard') ? 'nav-link-active' : '' }}" :class="scrolled || !{{ $isHeroPage ? 'true' : 'false' }} ? 'hover:bg-white/20' : 'hover:bg-black/10'"><i class="fa fa-home me-1"></i> Dashboard</a>
+                        <a href="{{ route('booking.riwayat') }}" class="px-3 py-2 rounded-lg transition {{ request()->is('riwayat-booking') ? 'nav-link-active' : '' }}" :class="scrolled || !{{ $isHeroPage ? 'true' : 'false' }} ? 'hover:bg-white/20' : 'hover:bg-black/10'"><i class="fa fa-calendar-check me-1"></i> Riwayat</a>
+                        <a href="/lapangan" class="px-3 py-2 rounded-lg transition {{ request()->is('lapangan*') ? 'nav-link-active' : '' }}" :class="scrolled || !{{ $isHeroPage ? 'true' : 'false' }} ? 'hover:bg-white/20' : 'hover:bg-black/10'"><i class="fa fa-futbol me-1"></i> Lapangan</a>
+                        <a href="/review" class="px-3 py-2 rounded-lg transition {{ request()->is('review*') ? 'nav-link-active' : '' }}" :class="scrolled || !{{ $isHeroPage ? 'true' : 'false' }} ? 'hover:bg-white/20' : 'hover:bg-black/10'"><i class="fa fa-star me-1"></i> Review</a>
+                    @endauth
+                    @guest
+                        <button @click="authModalOpen = true" class="px-4 py-2 rounded-lg transition" :class="scrolled || !{{ $isHeroPage ? 'true' : 'false' }} ? 'hover:bg-white/20' : 'hover:bg-black/10'">Login</button>
+                        <button @click="authModalOpen = true" class="px-4 py-2 bg-white text-theme-pink-dark font-bold rounded-lg transition hover:bg-pink-100">Register</button>
+                    @endguest
+                    @auth
+                        <div x-data="{ dropdownOpen: false }" class="relative">
+                            <button @click="dropdownOpen = !dropdownOpen" class="bg-black/20 p-1 rounded-full focus:outline-none focus:ring-2 focus:ring-white/50">
+                                <img src="{{ asset('images/user.png') }}" alt="Profile" class="w-8 h-8 rounded-full object-cover">
+                            </button>
+                            <div x-show="dropdownOpen" @click.away="dropdownOpen = false" x-transition class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-20 text-gray-800">
+                                <a href="#" class="block px-4 py-2 text-sm hover:bg-gray-100"><i class="fa fa-user fa-fw mr-2"></i>Profile</a>
+                                <div class="border-t border-gray-200"></div>
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button type="submit" class="w-full text-left block px-4 py-2 text-sm hover:bg-gray-100"><i class="fa fa-sign-out-alt fa-fw mr-2"></i>Logout</button>
+                                </form>
                             </div>
-                        @endauth
-                        </nav>
-                        <div class="md:hidden ml-auto">
-                            <button @click="mobileMenuOpen = !mobileMenuOpen" class="focus:outline-none text-white"><i class="fas fa-bars text-2xl"></i></button>
                         </div>
-                    </div>
+                    @endauth
+                </nav>
+                {{-- Tombol Menu Mobile --}}
+                <div class="md:hidden ml-auto">
+                    <button @click="mobileMenuOpen = !mobileMenuOpen" class="focus:outline-none text-white"><i class="fas fa-bars text-2xl"></i></button>
                 </div>
             </div>
-        </header>
+        </div>
+    </header>
+
     @else
         {{-- ## JIKA INI HALAMAN BIASA, GUNAKAN HEADER STANDAR YANG SOLID ## --}}
         <header class="bg-theme-pink text-white shadow-lg sticky top-0 z-40">
@@ -123,7 +139,7 @@
                     <nav class="hidden md:flex items-center space-x-2">
                         @auth
                             <a href="/dashboard" class="px-3 py-2 rounded-lg transition {{ request()->is('dashboard') ? 'nav-link-active' : 'hover:bg-white/20' }}"><i class="fa fa-home me-1"></i> Dashboard</a>
-                            <a href="/booking" class="px-3 py-2 rounded-lg transition {{ request()->is('booking*') ? 'nav-link-active' : 'hover:bg-white/20' }}"><i class="fa fa-calendar-check me-1"></i> Riwayat</a>
+                            <a href="{{ route('booking.riwayat') }}" class="px-3 py-2 rounded-lg transition {{ request()->is('riwayat-booking') ? 'nav-link-active' : 'hover:bg-white/20' }}"><i class="fa fa-calendar-check me-1"></i> Riwayat</a>
                             <a href="/lapangan" class="px-3 py-2 rounded-lg transition {{ request()->is('lapangan*') ? 'nav-link-active' : 'hover:bg-white/20' }}"><i class="fa fa-futbol me-1"></i> Lapangan</a>
                             <a href="/review" class="px-3 py-2 rounded-lg transition {{ request()->is('review*') ? 'nav-link-active' : 'hover:bg-white/20' }}"><i class="fa fa-star me-1"></i> Review</a>
                         @endauth
@@ -158,7 +174,7 @@
     <main class="flex-grow">
         @yield('content')
     </main>
-    
+
     {{-- Footer Utama --}}
     <footer class="bg-theme-pink text-white mt-auto">
         {{-- ... kode footer Anda (tidak ada perubahan) ... --}}
@@ -204,6 +220,6 @@
 
     {{-- Script JavaScript dari CDN --}}
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    
+
 </body>
 </html>

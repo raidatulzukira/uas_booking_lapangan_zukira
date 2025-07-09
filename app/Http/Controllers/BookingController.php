@@ -7,6 +7,7 @@ use App\Models\ZukiraBooking;
 use App\Models\ZukiraLapangan;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+use Barryvdh\DomPDF\Facade\Pdf; // Pastikan Anda sudah menginstal package barryvdh/laravel-dompdf
 
 class BookingController extends Controller
 {
@@ -90,5 +91,44 @@ class BookingController extends Controller
         $booking = ZukiraBooking::findOrFail($id);
         $booking->update(['status' => 'dikonfirmasi']);
         return back()->with('success', 'Booking telah dikonfirmasi.');
+    }
+
+    public function riwayat()
+    {
+        // Ambil semua data booking milik user yang sedang login
+        // 'with('payment')' untuk mengambil data payment terkait (optimasi query)
+        // 'latest()' untuk mengurutkan dari yang terbaru
+        $bookings = Auth::user()->bookings()->with('payment')->latest()->get();
+
+        // Kirim data bookings ke view
+        return view('booking.riwayat', compact('bookings'));
+    }
+
+     
+    public function downloadTicket(ZukiraBooking $booking)
+    {
+        // Otorisasi: Pastikan hanya pemilik booking yang bisa download.
+        // Jika Anda belum membuat Policy, Anda bisa sementara menonaktifkan baris ini.
+        // $this->authorize('view', $booking);
+
+        // Validasi: Pastikan status pembayaran sudah lunas.
+        if ($booking->payment?->status_verifikasi !== 'approved') {
+            // Jika belum lunas, kembalikan ke halaman sebelumnya dengan pesan error.
+            return redirect()->back()->with('error', 'Tiket belum tersedia karena pembayaran belum lunas.');
+        }
+
+        // Siapkan data yang akan dikirim ke view tiket.
+        $data = [
+            'booking' => $booking
+        ];
+
+        // Buat PDF dari sebuah view. Kita akan buat view-nya setelah ini.
+        $pdf = Pdf::loadView('booking.ticket_template', $data);
+
+        // Beri nama file yang akan di-download oleh pengguna.
+        $fileName = 'e-tiket-booking-' . $booking->id . '.pdf';
+
+        // Perintahkan browser untuk mengunduh file PDF tersebut.
+        return $pdf->download($fileName);
     }
 }

@@ -18,6 +18,11 @@ class ZukiraReviewResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'id';
 
+    public static function canCreate(): bool
+    {
+        return false;
+    }
+
     public static function form(Form $form): Form
     {
         return $form
@@ -78,8 +83,6 @@ class ZukiraReviewResource extends Resource
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

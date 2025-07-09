@@ -31,9 +31,10 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/home', fn() => redirect()->route('dashboard')); // Perbaikan typo dan redirect
 
         // Booking
-        Route::resource('booking', BookingController::class);
-        Route::get('/riwayat-booking', [BookingController::class, 'index'])->name('booking.index');
+        Route::resource('booking', BookingController::class)->except(['index']);
+        Route::get('/riwayat-booking', [BookingController::class, 'riwayat'])->name('booking.riwayat');
         Route::get('/booking/detail/{id}', [BookingController::class, 'detail'])->name('booking.detail');
+        Route::get('/booking/{booking}/download-ticket', [BookingController::class, 'downloadTicket'])->name('booking.downloadTicket');
 
         // Review
         Route::resource('review', ReviewController::class)->except(['index']);
@@ -53,7 +54,18 @@ Route::middleware(['auth', 'checkrole:admin'])->group(function() {
     // Rute admin lainnya bisa ditambahkan di sini
 });
 
-// Rute Publik (jika diperlukan)
-Route::get('/payment-success/{booking}', function(ZukiraBooking $booking) {
-    return view('payment.success', compact('booking'));
-})->name('payment.success');
+
+
+// Route::get('/review', 'App\Http\Controllers\ReviewController@index')->name('review.index');
+Route::get('/review', 'App\Http\Controllers\ReviewController@index')->name('review.index');
+Route::get('/review/create', 'App\Http\Controllers\ReviewController@create')->name('review.create');
+Route::post('/review', 'App\Http\Controllers\ReviewController@store')->name('review.store');
+Route::get('/review/{id}/edit', 'ReviewController@edit')->name('review.edit');
+Route::patch('/review/{id}', 'ReviewController@update')->name('review.update');
+Route::delete('/review/{id}', 'App\Http\Controllers\ReviewController@destroy')->name('review.destroy');
+
+
+Route::get('/cek-php', function () {
+    // Tampilkan lokasi file php.ini yang sedang dipakai
+    dd(php_ini_loaded_file());
+});
