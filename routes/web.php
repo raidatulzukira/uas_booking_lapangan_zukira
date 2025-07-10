@@ -9,6 +9,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\LandingController;
 use App\Models\ZukiraBooking;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -38,10 +39,16 @@ Route::middleware(['auth'])->group(function () {
 
         // Review
         Route::resource('review', ReviewController::class)->except(['index']);
+        
 
         // Payment
         Route::get('/payment/{booking}', [PaymentController::class, 'show'])->name('payment.show');
         Route::post('/payment/upload/{booking}', [PaymentController::class, 'upload'])->name('payment.upload');
+        Route::get('/profile', [UserController::class, 'showProfile'])->name('profile.show');
+        Route::get('/profile/edit', [UserController::class, 'editProfile'])->name('profile.edit');
+        Route::put('/profile/update', [UserController::class, 'updateProfile'])->name('profile.update'); // Menggunakan PUT untuk update
+        Route::get('/profile/password', [UserController::class, 'changePassword'])->name('password.change');
+        Route::put('/profile/password/update', [UserController::class, 'updatePassword'])->name('password.update'); // Menggunakan PUT untuk update
     });
 
     // Rute API untuk Pengguna Login (Customer & Admin)
@@ -69,3 +76,4 @@ Route::get('/cek-php', function () {
     // Tampilkan lokasi file php.ini yang sedang dipakai
     dd(php_ini_loaded_file());
 });
+
