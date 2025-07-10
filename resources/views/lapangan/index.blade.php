@@ -2,7 +2,9 @@
 
 @section('content')
 
-<div class="container mx-auto px-4 py-6 md:py-8">
+<div class="min-h-screen px-8 py-8 md:py-8 bg-gradient-to-br from-pink-50 to-pink-100">
+
+{{-- <div class="container mx-auto px-4 py-6 md:py-8"> --}}
     <h2 class="text-3xl font-bold text-gray-800 mb-6">Daftar Lapangan</h2>
 
     <div class="mb-8 p-4 bg-white rounded-xl shadow">
@@ -13,21 +15,15 @@
                 <input type="hidden" name="tipe" value="{{ request('tipe') }}">
             @endif
             <input type="text" name="search" class="w-full pl-4 pr-12 py-3 border border-gray-300 rounded-full focus:ring-2 focus:ring-theme-pink focus:border-transparent" placeholder="Cari berdasarkan nama lapangan..." value="{{ request('search') }}">
-            <button class="absolute right-2 top-1/2 -translate-y-1/2 bg-theme-pink-dark text-white rounded-full w-10 h-10 flex items-center justify-center hover:bg-opacity-90" type="submit">
+            <button class="absolute right-2 top-1/2 -translate-y-1/2 bg-theme-pink text-white rounded-full w-10 h-10 flex items-center justify-center hover:bg-opacity-90" type="submit">
                 <i class="fa fa-search"></i>
             </button>
         </form>
 
-          @if(request('tipe') || request('search'))
-                        <a href="{{ url()->current() }}" class="flex items-center justify-center w-10 h-10 rounded-full bg-gray-200 text-gray-600 hover:bg-gray-300 transition" title="Reset Filter & Pencarian">
-                            <i class="fa fa-times"></i>
-                        </a>
-                    @endif
-
         {{-- Tombol Filter Tipe --}}
         <div class="flex flex-wrap gap-2 items-center">
             <span class="font-semibold text-gray-700 mr-2">Filter Tipe:</span>
-            <a href="?search={{ request('search') }}" class="px-4 py-1.5 rounded-full text-sm transition {{ !request('tipe') ? 'bg-theme-pink-dark text-white shadow' : 'bg-pink-100 text-theme-pink-dark hover:bg-pink-200' }}">
+            <a href="?search={{ request('search') }}" class="px-4 py-1.5 rounded-full text-sm transition {{ !request('tipe') ? 'bg-theme-pink text-white shadow' : 'bg-pink-100 text-theme-pink hover:bg-pink-200' }}">
                 Semua
             </a>
             @php
@@ -35,7 +31,7 @@
                 $tipeList = \App\Models\ZukiraLapangan::select('tipe')->distinct()->pluck('tipe');
             @endphp
             @foreach($tipeList as $tipe)
-                <a href="?tipe={{ $tipe }}&search={{ request('search') }}" class="px-4 py-1.5 rounded-full text-sm transition {{ request('tipe') == $tipe ? 'bg-theme-pink-dark text-white shadow' : 'bg-pink-100 text-theme-pink-dark hover:bg-pink-200' }}">
+                <a href="?tipe={{ $tipe }}&search={{ request('search') }}" class="px-4 py-1.5 rounded-full text-sm transition {{ request('tipe') == $tipe ? 'bg-theme-pink text-white shadow' : 'bg-pink-100 text-theme-pink hover:bg-pink-200' }}">
                     {{ ucfirst($tipe) }}
                 </a>
             @endforeach
@@ -66,7 +62,7 @@
 
                     {{-- Menambahkan flex-grow agar tombol selalu di bawah --}}
                     <div class="mt-auto pt-4">
-                        <a href="{{ route('booking.create', ['lapangan_id' => $lapangan->id]) }}" class="block w-full text-center bg-theme-pink-dark text-white font-bold py-2.5 px-4 rounded-lg hover:bg-opacity-90 transition shadow-lg">
+                        <a href="{{ route('booking.create', ['lapangan_id' => $lapangan->id]) }}" class="block w-full text-center bg-theme-pink text-white font-bold py-1.5 px-4 rounded-lg hover:bg-opacity-90 transition shadow-lg">
                             Booking Sekarang
                         </a>
                     </div>

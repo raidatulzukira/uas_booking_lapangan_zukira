@@ -1,7 +1,7 @@
 @extends('layouts.tailwind')
 
 @section('content')
-<div class="min-h-screen bg-gradient-to-br from-slate-50 to-indigo-100 py-8">
+<div class="min-h-screen bg-gradient-to-br from-pink-50 to-pink-100 py-8">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <!-- Header Section -->
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">

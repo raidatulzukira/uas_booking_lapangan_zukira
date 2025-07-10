@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
-    
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -14,6 +14,13 @@
     {{-- Link untuk Ikon (Font Awesome) --}}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
+    {{-- Link untuk Ikon (Font Awesome) --}}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<!-- Animate On Scroll (AOS) CSS -->
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+
+
     {{-- Link untuk Font --}}
    <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -21,6 +28,10 @@
 
     {{-- Alpine.js untuk interaktivitas --}}
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <!-- Animate On Scroll (AOS) CSS -->
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+
 
     {{-- Konfigurasi warna custom untuk Tailwind --}}
     <script>
@@ -79,8 +90,8 @@
     $isHeroPage = View::hasSection('is_hero_page');
 @endphp
 
-<header 
-        x-data="{ mobileMenuOpen: false, scrolled: false }" 
+<header
+        x-data="{ mobileMenuOpen: false, scrolled: false }"
         x-on:scroll.window="scrolled = (window.scrollY > 50)"
         class="w-full z-40 fixed top-0 transition-colors duration-300"
         :class="{ 'bg-theme-pink shadow-lg': scrolled || !{{ $isHeroPage ? 'true' : 'false' }}, 'bg-transparent': !scrolled && {{ $isHeroPage ? 'true' : 'false' }} }"
@@ -220,6 +231,16 @@
 
     {{-- Script JavaScript dari CDN --}}
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <!-- Animate On Scroll (AOS) JS -->
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+  AOS.init({
+    duration: 1000,
+    once: true
+  });
+</script>
+
 
 </body>
 </html>
