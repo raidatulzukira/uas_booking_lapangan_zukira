@@ -30,7 +30,10 @@ class HomeController extends Controller
     {
         $lapangans = ZukiraLapangan::all();
         $bookings = ZukiraBooking::with('lapangan')->where('user_id', Auth::id())->get();
-        $reviews = ZukiraReview::with('lapangan')->where('user_id', Auth::id())->get();
+          $reviews = ZukiraReview::with(['user', 'lapangan'])
+                                ->latest() // Urutkan dari yang terbaru
+                                ->take(6)    // Ambil 5 review saja agar tidak terlalu panjang
+                                ->get();
 
         return view('dashboard.index', compact('lapangans', 'bookings', 'reviews'));
 }

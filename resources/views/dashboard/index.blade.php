@@ -40,6 +40,7 @@
         @endif
 
         <div>
+<<<<<<< HEAD
             <h4 data-aos="fade-up" data-aos-delay="100" class="font-serif text-3xl font-bold text-gray-800 mb-6 text-center">Apa Kata Mereka?</h4>
 
             <div class="space-y-6">
@@ -89,8 +90,48 @@
                         Belum ada review yang masuk.
                     </div>
                 @endif
+=======
+    <h2 class="font-serif text-3xl font-bold text-gray-800 mb-6 text-center">Apa Kata Mereka Tentang Halaman Kami?</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        @forelse($reviews as $review)
+        <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-200 flex flex-col transition-transform transform hover:-translate-y-2 hover:shadow-xl">
+            {{-- Bagian User --}}
+            <div class="flex items-center mb-4">
+                <img class="h-12 w-12 rounded-full object-cover mr-4 border-2 border-pink-200" 
+                     src="{{ $review->user->profile_photo_path ? asset('storage/' . $review->user->profile_photo_path) : asset('images/user.png') }}" 
+                     alt="Foto {{ $review->user->name }}">
+                <div>
+                    <p class="font-bold text-gray-900">{{ $review->user->name }}</p>
+                    <p class="text-sm text-gray-500">Review untuk {{ $review->lapangan->nama }}</p>
+                </div>
+            </div>
+
+            {{-- Bagian Rating Bintang --}}
+            <div class="text-yellow-400 mb-3 flex items-center">
+                @for($i = 1; $i <= 5; $i++)
+                    <svg class="w-5 h-5 {{ $i <= $review->rating ? 'text-yellow-400' : 'text-gray-300' }}" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                    </svg>
+                @endfor
+            </div>
+
+            {{-- Komentar --}}
+            <p class="text-gray-600 italic flex-grow">"{{ $review->komentar }}"</p>
+
+            {{-- Tanggal --}}
+            <div class="text-right text-xs text-gray-400 mt-4 pt-4 border-t border-gray-100">
+                {{ $review->created_at->diffForHumans() }}
+>>>>>>> 564e539b4445fc29805eaf91a31ebbf39532b3fd
             </div>
         </div>
+        @empty
+            <div class="col-span-1 md:col-span-2 lg:col-span-3 text-center text-gray-500 py-12 px-4 rounded-2xl bg-white shadow-lg border">
+                <p>Belum ada review dari pengguna lain.</p>
+            </div>
+        @endforelse
+    </div>
+</div>
+
 
     </div>
 
