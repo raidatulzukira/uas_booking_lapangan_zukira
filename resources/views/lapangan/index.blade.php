@@ -62,9 +62,19 @@
 
                     {{-- Menambahkan flex-grow agar tombol selalu di bawah --}}
                     <div class="mt-auto pt-4">
-                        <a href="{{ route('booking.create', ['lapangan_id' => $lapangan->id]) }}" class="block w-full text-center bg-theme-pink text-white font-bold py-1.5 px-4 rounded-lg hover:bg-opacity-90 transition shadow-lg">
-                            Booking Sekarang
-                        </a>
+                        {{-- ✅ PERBAIKAN DI SINI: Tombol ini sekarang cerdas --}}
+                        @auth
+                            {{-- Jika sudah login, arahkan ke halaman booking --}}
+                            <a href="{{ route('booking.create', ['lapangan_id' => $lapangan->id]) }}" class="block w-full text-center bg-theme-pink-dark text-white font-bold py-2.5 px-4 rounded-lg hover:bg-opacity-90 transition shadow-lg">
+                                Booking Sekarang
+                            </a>
+                        @endauth
+                        @guest
+                            {{-- Jika belum login, buka popup --}}
+                            <button @click="authModalOpen = true" class="block w-full text-center bg-theme-pink-dark text-white font-bold py-2.5 px-4 rounded-lg hover:bg-opacity-90 transition shadow-lg">
+                                Booking Sekarang
+                            </button>
+                        @endguest
                     </div>
                 </div>
             </div>

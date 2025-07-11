@@ -24,7 +24,7 @@ class LandingController extends Controller
 
         if ($request->has('search')) {
             $query->where('nama', 'like', '%' . $request->search . '%')
-                  ->orWhere('tipe', 'like', '%' . $request->search . '%');
+            ->orWhere('tipe', 'like', '%' . $request->search . '%');
         }
 
         $lapangans = $query->latest()->get();

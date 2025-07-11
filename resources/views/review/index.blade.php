@@ -85,31 +85,7 @@
                             </div>
 
                             <!-- Action Buttons -->
-                            @auth
-                                @if(Auth::id() == $review->user_id)
-                                    <div class="flex gap-3 pt-4 border-t border-gray-100">
-                                        <a href="{{ route('review.edit', $review->id) }}"
-                                           class="flex items-center gap-2 px-4 py-2 text-sm font-medium text-amber-700 bg-blue-100 rounded-lg hover:bg-blue-100 transition-colors duration-200 border border-blue-200 hover:border-blue-300">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                                            </svg>
-                                            Edit
-                                        </a>
-                                        <form action="{{ route('review.destroy', $review->id) }}" method="POST" class="inline"
-                                              onsubmit="return confirm('Yakin ingin menghapus review ini?')">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit"
-                                                    class="flex items-center gap-2 px-4 py-2 text-sm font-medium text-red-700 bg-red-100 rounded-lg hover:bg-red-100 transition-colors duration-200 border border-red-200 hover:border-red-300">
-                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                                </svg>
-                                                Hapus
-                                            </button>
-                                        </form>
-                                    </div>
-                                @endif
-                            @endauth
+                            
                         </div>
                     </div>
                 @endforeach

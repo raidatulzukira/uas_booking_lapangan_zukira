@@ -22,7 +22,7 @@
 
 
     {{-- Link untuk Font --}}
-   <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
 
@@ -94,7 +94,7 @@
                                 <a href="/lapangan" class="px-3 py-2 rounded-lg transition {{ request()->is('lapangan*') ? 'nav-link-active' : '' }}" :class="scrolled ? 'hover:bg-white/20' : 'hover:bg-black/10'"><i class="fa fa-futbol me-1"></i> Lapangan</a>
                                 <a href="/review" class="px-3 py-2 rounded-lg transition {{ request()->is('review*') ? 'nav-link-active' : '' }}" :class="scrolled ? 'hover:bg-white/20' : 'hover:bg-black/10'"><i class="fa fa-star me-1"></i> Review</a>
                             @endauth
-                             @guest
+                            @guest
                                 <button @click="authModalOpen = true" class="px-4 py-2 rounded-lg transition" :class="scrolled ? 'hover:bg-white/20' : 'hover:bg-black/10'">Login</button>
                                 <button @click="authModalOpen = true" class="px-4 py-2 bg-white text-theme-pink-dark font-bold rounded-lg transition hover:bg-pink-100">Register</button>
                             @endguest
@@ -141,11 +141,11 @@
                             <a href="/lapangan" class="px-3 py-2 rounded-lg transition {{ request()->is('lapangan*') ? 'nav-link-active' : 'hover:bg-white/20' }}"><i class="fa fa-futbol me-1"></i> Lapangan</a>
                             <a href="/review" class="px-3 py-2 rounded-lg transition {{ request()->is('review*') ? 'nav-link-active' : 'hover:bg-white/20' }}"><i class="fa fa-star me-1"></i> Review</a>
                         @endauth
-                          @guest
+                        @guest
                             <button @click="authModalOpen = true" class="px-4 py-2 rounded-lg transition hover:bg-white/20">Login</button>
                             <button @click="authModalOpen = true" class="px-4 py-2 bg-white text-theme-pink-dark font-bold rounded-lg transition hover:bg-pink-100">Register</button>
                         @endguest
-                         @auth
+                        @auth
                             <div x-data="{ dropdownOpen: false }" class="relative">
                                 <button @click="dropdownOpen = !dropdownOpen" class="bg-white/20 p-1 rounded-full focus:outline-none focus:ring-2 focus:ring-white/50">
                                     {{-- PERBAIKAN FOTO PROFIL --}}
@@ -154,7 +154,7 @@
                                 <div x-show="dropdownOpen" @click.away="dropdownOpen = false" x-transition class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-20 text-gray-800">
                                     <a href="{{ route('profile.show') }}" class="block px-4 py-2 text-sm hover:bg-gray-100"><i class="fa fa-user fa-fw mr-2"></i>Profile</a>
                                     <div class="border-t border-gray-200"></div>
-                                     @if(Auth::user()->hasAnyRole(['admin', 'super_admin']))
+                                    @if(Auth::user()->hasAnyRole(['admin', 'super_admin']))
                                             <a href="/admin" class="w-full text-left block px-4 py-2 text-sm hover:bg-gray-100"><i class="fa fa-sign-out-alt fa-fw mr-2"></i>Admin Panel</a>
                                             <div class="border-t border-gray-200"></div>
                                         @endif
@@ -183,9 +183,17 @@
                 <div>
                     <h3 class="font-bold text-lg mb-4">Menu Cepat</h3>
                     <ul class="space-y-2">
-                        <li><a href="/dashboard" class="hover:text-pink-200 transition">Dashboard</a></li>
-                        <li><a href="{{ route('booking.create') }}" class="hover:text-pink-200 transition">Booking Lapangan</a></li>
-                        <li><a href="{{ route('review.create') }}" class="hover:text-pink-200 transition">Tulis Review</a></li>
+                         @auth
+                            <li><a href="/dashboard" class="hover:text-pink-200 transition">Dashboard</a></li>
+                            <li><a href="{{ route('lapangan.index') }}" class="hover:text-pink-200 transition">Booking Lapangan</a></li>
+                            <li><a href="{{ route('review.create') }}" class="hover:text-pink-200 transition">Tulis Review</a></li>
+                        @endauth
+                        @guest
+                            {{-- Menggunakan button dengan @click untuk membuka popup --}}
+                            <li><button @click="authModalOpen = true" class="text-left w-full hover:text-pink-200 transition">Login</button></li>
+                            <li><button @click="authModalOpen = true" class="text-left w-full hover:text-pink-200 transition">Register</button></li>
+                            <li><a href="{{ route('lapangan.index') }}" class="hover:text-pink-200 transition">Lihat Lapangan</a></li>
+                        @endguest
                     </ul>
                 </div>
                 <div>

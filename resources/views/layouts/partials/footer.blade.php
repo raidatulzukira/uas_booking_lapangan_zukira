@@ -8,7 +8,6 @@
         <ul class="list-unstyled">
           <li><a href="/dashboard" class="text-white text-decoration-none">Dashboard</a></li>
           <li><a href="{{ route('booking.create') }}" class="text-white text-decoration-none">Booking Lapangan</a></li>
-          <li><a href="{{ route('review.create') }}" class="text-white text-decoration-none">Tulis Review</a></li>
         </ul>
       </div>
 
