@@ -7,12 +7,17 @@
 {{-- ========================================================== --}}
 {{-- HERO SECTION --}}
 {{-- ========================================================== --}}
-<div class="relative w-full min-h-[60vh] md:min-h-[70vh] flex items-center justify-center text-center bg-cover bg-center" style="background-image: url('{{ asset('images/bernabeu.jpg') }}');">
+<div class="relative w-full min-h-[60vh] md:min-h-[100vh] flex items-center justify-center text-center bg-cover bg-center" style="background-image: url('{{ asset('images/bernabeu.jpg') }}');">
     <div class="absolute top-0 left-0 w-full h-full bg-black opacity-60"></div>
     <div class="relative z-10 p-4">
-        <h1 class="font-serif text-4xl md:text-6xl font-bold text-white mb-4">Selamat Datang di Zukira Booking</h1>
-        <p class="font-sans text-md md:text-lg text-gray-200 max-w-2xl mx-auto mb-6">
-            Pesan lapangan futsal, badminton, dan lainnya dengan mudah di Padang.
+        <h1 class="text-4xl md:text-6xl font-bold text-white mb-5 tracking-wide leading-tight" style="font-family: 'Playfair Display', serif;">
+            Selamat Datang
+        </h1>
+        <h1 class="text-4xl md:text-6xl font-bold text-white mb-9 tracking-wide leading-tight" style="font-family: 'Playfair Display', serif;">
+            Zukira Booking Lapangan
+        </h1>
+        <p class="font-family text-md md:text-lg text-gray-200 max-w-2xl mx-auto mb-20">
+            Temukan dan pesan lapangan olahraga favorit Anda dengan mudah, cepat, dan aman. Kelola jadwal, lihat riwayat booking, dan nikmati pengalaman bermain yang menyenangkan hanya di Zukira Booking. Siap main hari ini? Yuk, booking lapangan favoritmu langsung dari genggaman tangan, praktis, dan tanpa ribet.
         </p>
         <a href="{{ route('lapangan.index') }}" class="inline-flex items-center gap-3 bg-theme-pink-dark text-white font-bold py-3 px-6 rounded-lg hover:bg-opacity-90 transition-all shadow-md">
             <i class="fa fa-futbol"></i>
@@ -39,7 +44,7 @@
         @endif
 
         <div>
-            <h4 data-aos="fade-up" class="font-serif text-3xl font-bold text-theme-pink-dark mb-10 text-center">Apa Kata Mereka?</h4>
+            <h4 data-aos="fade-up" class="font-serif text-4xl md:text-4xl font-bold text-theme-pink-dark mb-8 text-center">Apa Kata Mereka?</h4>
 
             @if($reviews->isNotEmpty())
                 <div data-aos="fade-up" data-aos-delay="200" class="swiper review-swiper max-w-6xl mx-auto relative">
@@ -86,17 +91,17 @@
     </div>
 
     {{-- 2. SEKSI "KENAPA HARUS MEMILIH KAMI" --}}
-    <div class="container mx-auto px-4 py-8 md:py-12">
+    <div class="container mx-auto px-4 py-8 md:py-10">
         <div class="max-w-6xl mx-auto text-center" data-aos="fade-up">
-            <h2 class="text-3xl md:text-4xl font-serif font-bold text-theme-pink-dark mb-6">Kenapa Harus Memilih Kami?</h2>
-            <p class="text-gray-600 max-w-3xl mx-auto text-md mb-12">
-                Kami berkomitmen memberikan layanan terbaik bagi Anda yang ingin memesan lapangan olahraga dengan mudah, cepat, dan nyaman.
+            <h2 class="text-4xl md:text-4xl font-serif font-bold text-theme-pink-dark mb-6">Kenapa Harus Memilih Kami?</h2>
+            <p class="text-gray-600 max-w-3xl mx-auto text-md mb-10">
+                Kami berkomitmen memberikan layanan terbaik bagi Anda yang ingin memesan lapangan olahraga dengan mudah, cepat, dan nyaman. Kami bukan sekadar tempat booking. Kami hadir dengan:
             </p>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
-                
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-left px-4 md:px-8">
+
                 {{-- KARTU 1 DIBUNGKUS DENGAN 'group' --}}
                 <div class="group" data-aos="zoom-in" data-aos-delay="100">
-                    <div class="bg-white ring-2 ring-theme-pink-light rounded-xl p-6 shadow-md group-hover:shadow-lg group-hover:-translate-y-2 transition-all duration-300">
+                    <div class="bg-white ring-2 ring-theme-pink-light rounded-xl p-5 shadow-md group-hover:shadow-lg group-hover:-translate-y-2 transition-all duration-300">
                         <div class="text-theme-pink-dark text-3xl mb-4"><i class="fas fa-calendar-check"></i></div>
                         <h3 class="text-lg font-semibold mb-2">Booking Online 24/7</h3>
                         <p class="text-gray-600 text-sm">Anda bisa melakukan pemesanan kapan saja tanpa perlu datang langsung ke lokasi.</p>
@@ -105,7 +110,7 @@
 
                 {{-- KARTU 2 DIBUNGKUS DENGAN 'group' --}}
                 <div class="group" data-aos="zoom-in" data-aos-delay="200">
-                    <div class="bg-white ring-2 ring-theme-pink-light rounded-xl p-6 shadow-md group-hover:shadow-lg group-hover:-translate-y-2 transition-all duration-300">
+                    <div class="bg-white ring-2 ring-theme-pink-light rounded-xl p-5 shadow-md group-hover:shadow-lg group-hover:-translate-y-2 transition-all duration-300">
                         <div class="text-theme-pink-dark text-3xl mb-4"><i class="fas fa-shield-alt"></i></div>
                         <h3 class="text-lg font-semibold mb-2">Transaksi Aman</h3>
                         <p class="text-gray-600 text-sm">Sistem kami terjamin keamanannya dengan bukti pembayaran dan riwayat lengkap.</p>
@@ -114,10 +119,10 @@
 
                 {{-- KARTU 3 DIBUNGKUS DENGAN 'group' --}}
                 <div class="group" data-aos="zoom-in" data-aos-delay="300">
-                    <div class="bg-white ring-2 ring-theme-pink-light rounded-xl p-6 shadow-md group-hover:shadow-lg group-hover:-translate-y-2 transition-all duration-300">
+                    <div class="bg-white ring-2 ring-theme-pink-light rounded-xl p-5 shadow-md group-hover:shadow-lg group-hover:-translate-y-2 transition-all duration-300">
                         <div class="text-theme-pink-dark text-3xl mb-4"><i class="fas fa-star"></i></div>
                         <h3 class="text-lg font-semibold mb-2">Rating & Review Jelas</h3>
-                        <p class="text-gray-600 text-sm">Lihat pengalaman pengguna lain sebelum memesan, sehingga Anda lebih percaya diri memilih.</p>
+                        <p class="text-gray-600 text-sm">Lihat pengalaman pengguna lain sebelum memesan, sehingga Anda lebih percaya memilih.</p>
                     </div>
                 </div>
 
@@ -126,11 +131,11 @@
     </div>
 
     {{-- 3. SEKSI "CARA BOOKING" (DIMODIFIKASI) --}}
-    <div class="container mx-auto px-4 py-8 md:py-12">
+    <div class="container mx-auto px-4 py-8 md:py-24">
         <div class="text-center">
-            <h2 class="text-3xl md:text-4xl font-serif font-bold text-gray-800 mb-4" data-aos="fade-up">Booking Lapangan, Semudah Itu!</h2>
-            <p class="text-gray-600 max-w-2xl mx-auto text-md mb-16" data-aos="fade-up" data-aos-delay="100">Ikuti 4 langkah sederhana untuk mengamankan jadwal bermain Anda bersama kami.</p>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
+            <h2 class="text-3xl md:text-4xl font-serif font-bold text-theme-pink-dark mb-4" data-aos="fade-up">Booking Lapangan, Semudah Itu!</h2>
+            <p class="text-gray-600 max-w-2xl mx-auto text-md mb-10" data-aos="fade-up" data-aos-delay="100">Ikuti 4 langkah sederhana untuk mengamankan jadwal bermain Anda bersama kami.</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 px-4 md:px-8">
 
                 {{-- KARTU 1 DIBUNGKUS DENGAN 'group' --}}
                 <div class="group" data-aos="fade-down" data-aos-delay="500">

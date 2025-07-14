@@ -82,7 +82,7 @@
             class="fixed top-0 w-full z-40"
         >
             <div class="transition-colors duration-300" :class="scrolled ? 'bg-theme-pink shadow-lg' : 'bg-transparent'">
-                <div class="container mx-auto px-4">
+                <div class="container mx-auto px-4 md:px-12">
                     <div class="flex items-center justify-between p-1 relative">
                         <a href="{{ url('/') }}" class="absolute left-4 top-1/2 -translate-y-1/2 z-20">
                             <img src="{{ asset('images/logo.png') }}" alt="Zukira Booking Logo" class="h-20 w-auto">
@@ -178,12 +178,12 @@
 
     {{-- Footer Utama --}}
     <footer class="bg-theme-pink text-white mt-auto">
-        <div class="container mx-auto px-4 py-8">
+        <div class="container mx-auto px-10 py-6">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div>
-                    <h3 class="font-bold text-lg mb-4">Menu Cepat</h3>
+                    <h3 class="font-bold text-lg mb-6">Menu Cepat</h3>
                     <ul class="space-y-2">
-                         @auth
+                        @auth
                             <li><a href="/dashboard" class="hover:text-pink-200 transition">Dashboard</a></li>
                             <li><a href="{{ route('lapangan.index') }}" class="hover:text-pink-200 transition">Booking Lapangan</a></li>
                             <li><a href="{{ route('review.create') }}" class="hover:text-pink-200 transition">Tulis Review</a></li>
@@ -197,7 +197,7 @@
                     </ul>
                 </div>
                 <div>
-                    <h3 class="font-bold text-lg mb-4">Ikuti Kami</h3>
+                    <h3 class="font-bold text-lg mb-6">Ikuti Kami</h3>
                     <div class="space-y-2">
                         <a href="#" class="flex items-center hover:text-pink-200 transition"><i class="fab fa-youtube w-6 mr-2"></i> Youtube</a>
                         <a href="#" class="flex items-center hover:text-pink-200 transition"><i class="fab fa-instagram w-6 mr-2"></i> Instagram</a>
