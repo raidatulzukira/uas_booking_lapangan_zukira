@@ -40,7 +40,7 @@ class ZukiraLapanganResource extends Resource
                     ->maxLength(65535)
                     ->columnSpanFull(),
                 Forms\Components\TextInput::make('harga')
-                    ->label('Harga per Hari')
+                    ->label('Harga per Jam')
                     ->required()
                     ->extraAttributes([
                         'x-data' => '',
@@ -58,8 +58,8 @@ class ZukiraLapanganResource extends Resource
                     ->default('tersedia') // Set default value
                     ->required(),
 
-            
-                
+
+
             ]);
     }
 
