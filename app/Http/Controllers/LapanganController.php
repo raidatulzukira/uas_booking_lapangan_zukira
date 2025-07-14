@@ -17,6 +17,9 @@ class LapanganController extends Controller
         // 1. Mulai query ke database, JANGAN langsung panggil ->get()
         $query = ZukiraLapangan::query();
 
+        $query->where('status', 'tersedia');
+
+
         // 2. Cek jika di URL ada parameter 'tipe' dan isinya bukan 'semua'
         if ($request->filled('tipe') && $request->input('tipe') != 'semua') {
             // Terapkan filter WHERE pada query

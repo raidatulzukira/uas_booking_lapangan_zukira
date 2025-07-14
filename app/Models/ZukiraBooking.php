@@ -94,6 +94,21 @@ class ZukiraBooking extends Model
 {
     return $this->hasOne(ZukiraPayment::class, 'booking_id');
 }
+protected static function booted(): void
+    {
+        // Setiap kali sebuah booking SELESAI DIBUAT (created)...
+        static::created(function (ZukiraBooking $booking) {
+            
+            // Cari lapangan yang berelasi
+            $lapangan = $booking->lapangan;
+
+            // Jika ada, update statusnya
+            if ($lapangan) {
+                $lapangan->status = 'Tidak tersedia';
+                $lapangan->save();
+            }
+        });
 
     
+}
 }

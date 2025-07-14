@@ -43,35 +43,63 @@
 
                         <!-- Status dan Aksi -->
                         <div class="border-t border-gray-200 pt-3 mt-3 flex flex-col sm:flex-row justify-between items-center gap-3">
-                            @php
-                                $statusPembayaran = $booking->payment?->status_verifikasi;
-                            @endphp
+    
+    {{-- BAGIAN KIRI: MENAMPILKAN STATUS BOOKING & PEMBAYARAN --}}
+    <div class="flex items-center gap-2">
+        <span class="font-medium text-gray-700">Status:</span>
+        
+        {{-- 1. Status Konfirmasi Booking --}}
+        @if ($booking->status == 'dikonfirmasi')
+            <span class="px-2 py-1 text-xs font-semibold text-green-800 bg-green-100 rounded-full">Terkonfirmasi</span>
+        @elseif ($booking->status == 'pending')
+            <span class="px-2 py-1 text-xs font-semibold text-yellow-800 bg-yellow-100 rounded-full">Menunggu</span>
+        @else
+            <span class="px-2 py-1 text-xs font-semibold text-red-800 bg-red-100 rounded-full">Ditolak</span>
+        @endif
 
-                            <div class="flex items-center gap-2">
-                                <span class="font-medium text-gray-700">Status:</span>
-                                @if ($statusPembayaran == 'approved')
-                                    <span class="px-2 py-1 text-xs font-semibold text-green-800 bg-green-100 rounded-full">Lunas</span>
-                                @elseif ($statusPembayaran == 'pending')
-                                    <span class="px-2 py-1 text-xs font-semibold text-yellow-800 bg-yellow-100 rounded-full">Menunggu</span>
-                                @elseif ($statusPembayaran == 'rejected')
-                                    <span class="px-2 py-1 text-xs font-semibold text-red-800 bg-red-100 rounded-full">Ditolak</span>
-                                @else
-                                    <span class="px-2 py-1 text-xs font-semibold text-gray-800 bg-gray-200 rounded-full">Belum Dibayar</span>
-                                @endif
-                            </div>
+        {{-- 2. Status Pembayaran (hanya jika sudah dikonfirmasi) --}}
+        @if ($booking->status == 'dikonfirmasi')
+            @php
+                $statusPembayaran = $booking->payment?->status_verifikasi;
+            @endphp
+            @if ($statusPembayaran == 'approved')
+                <span class="px-2 py-1 text-xs font-semibold text-blue-800 bg-blue-100 rounded-full">Lunas</span>
+            @endif
+        @endif
+    </div>
 
-                            <div>
-                                @if ($statusPembayaran == 'approved')
-                                    <a href="{{ route('booking.downloadTicket', $booking->id) }}" class="text-white bg-pink-500 hover:bg-pink-600 font-semibold py-1.5 px-4 rounded-lg shadow-md transition-all">
-                                        E-Tiket
-                                    </a>
-                                @else
-                                    <a href="{{ route('payment.show', $booking->id) }}" class="text-white bg-rose-400 hover:bg-rose-800 font-semibold py-1.5 px-4 rounded-lg shadow-md transition-all">
-                                        {{ $statusPembayaran == 'pending' ? 'Cek' : 'Bayar Sekarang' }}
-                                    </a>
-                                @endif
-                            </div>
-                        </div>
+    {{-- BAGIAN KANAN: MENAMPILKAN TOMBOL AKSI --}}
+    <div>
+        @if ($booking->status == 'dikonfirmasi')
+            {{-- Jika booking sudah dikonfirmasi, baru kita cek status pembayarannya --}}
+            @php
+                $statusPembayaran = $booking->payment?->status_verifikasi;
+            @endphp
+
+            @if ($statusPembayaran == 'approved')
+                {{-- Jika sudah lunas, tampilkan tombol E-Tiket --}}
+                <a href="{{ route('booking.downloadTicket', $booking->id) }}" class="text-white bg-pink-500 hover:bg-pink-600 font-semibold py-1.5 px-4 rounded-lg shadow-md transition-all">
+                    E-Tiket
+                </a>
+            @else
+                {{-- Jika belum lunas (atau belum bayar), tampilkan tombol Bayar --}}
+                <a href="{{ route('payment.show', $booking->id) }}" class="text-white bg-rose-400 hover:bg-rose-800 font-semibold py-1.5 px-4 rounded-lg shadow-md transition-all">
+                    {{ $statusPembayaran == 'pending' ? 'Cek Pembayaran' : 'Bayar Sekarang' }}
+                </a>
+            @endif
+
+        @elseif ($booking->status == 'pending')
+            {{-- Jika booking masih pending, tombol dinonaktifkan --}}
+            <button disabled class="text-white bg-gray-400 font-semibold py-1.5 px-4 rounded-lg cursor-not-allowed">
+                Menunggu Konfirmasi
+            </button>
+            
+        @else
+            {{-- Jika booking ditolak atau status lainnya --}}
+            <span class="text-sm text-red-600 font-semibold">Booking Ditolak</span>
+        @endif
+    </div>
+</div>
                     </div>
                 </div>
             </div>
