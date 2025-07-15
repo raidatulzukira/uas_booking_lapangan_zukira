@@ -52,7 +52,7 @@ class ZukiraLapanganResource extends Resource
                 Forms\Components\Select::make('status')
                     ->options([
                         'tersedia' => 'Tersedia',
-                        'booked' => 'Booked',
+                        'tidak tersedia' => 'Tidak Tersedia',
                         'maintenance' => 'Maintenance',
                     ])
                     ->default('tersedia') // Set default value

@@ -7,6 +7,8 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
+## Maaf pak, di kontribution nya ada nama github teman saya pak. Soalnya saat saya mau install tailwind laptop saya bermasalah pak dan susah di perbaiki pak, jadi install tailwind nya pakai laptop teman saya dulu pak. Saat saya push ke github otomatis ada nama github teman saya di repostory saya pak. Tapi setelah itu saya sudah hapus commit nya pak karena laptop saya akhirnya bisa install tailwind dan memulai ulang dari nol dengan laptop saya pak, tetapi nama github teman saya masih permanen disana pak. 
+
 ## About Laravel
 
 Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
