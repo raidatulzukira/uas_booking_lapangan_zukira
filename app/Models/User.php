@@ -63,6 +63,25 @@ public function hasBooking()
     return $this->bookings()->exists();
 }
 
+    public function hasPaidBooking(): bool
+    {
+        return $this->bookings()
+            ->whereHas('payment', function ($query) {
+                $query->where('status_verifikasi', 'approved');
+            })
+            ->exists();
+    }
+
+    public function hasPaidBookingForLapangan(int $lapanganId): bool
+    {
+        return $this->bookings()
+            ->where('lapangan_id', $lapanganId)
+            ->whereHas('payment', function ($query) {
+                $query->where('status_verifikasi', 'approved');
+            })
+            ->exists();
+    }
+
  public function canAccessPanel(Panel $panel): bool
     {
         // Logika untuk memeriksa apakah user boleh mengakses panel.

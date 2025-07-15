@@ -48,7 +48,15 @@ public function create()
     /** @var \App\Models\User $user */
     $user = Auth::user();
 
+    if (!$user->hasPaidBooking()) {
+        return redirect()->route('review.index')
+            ->with('error', 'Anda hanya dapat menulis review setelah pembayaran disetujui.');
+    }
+
     $bookedLapangan = $user->bookings()
+        ->whereHas('payment', function ($query) {
+            $query->where('status_verifikasi', 'approved');
+        })
         ->with('lapangan')
         ->get()
         ->pluck('lapangan')
@@ -94,8 +102,8 @@ public function store(Request $request)
     /** @var \App\Models\User $user */
     $user = Auth::user();
 
-    if (!$user->hasBooking()) {
-        return redirect()->back()->with('error', 'Anda belum melakukan booking');
+    if (!$user->hasPaidBookingForLapangan($request->lapangan_id)) {
+        return redirect()->back()->with('error', 'Review hanya dapat dibuat setelah pembayaran untuk lapangan tersebut disetujui.');
     }
 
     $request->validate([

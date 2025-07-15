@@ -13,7 +13,7 @@
             </div>
 
             @auth
-                @if(Auth::user()->hasBooking())
+                @if(Auth::user()->hasPaidBooking())
                     <a href="{{ route('review.create', ['lapangan_id' =>  $review->lapangan_id ?? 1]) }}"
                        class="group relative inline-flex items-center px-6 py-3 overflow-hidden text-sm font-medium text-white bg-gradient-to-r from-pink-500 to-purple-500 rounded-xl hover:from-pink-600 hover:to-purple-500 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
                         <span class="absolute inset-0 w-full h-full bg-gradient-to-r from-pink-600 to-purple-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
@@ -101,7 +101,7 @@
                     <h3 class="text-xl font-semibold text-gray-900 mb-2">Belum Ada Review</h3>
                     <p class="text-gray-600 mb-6">Jadilah yang pertama memberikan review untuk lapangan ini!</p>
                     @auth
-                        @if(Auth::user()->hasBooking())
+                        @if(Auth::user()->hasPaidBooking())
                             <a href="{{ route('review.create', ['lapangan_id' =>  $review->lapangan_id ?? 1]) }}"
                                class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-pink-500 to-purple-600 text-white font-medium rounded-xl hover:from-pink-600 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
                                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
